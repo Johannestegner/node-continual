@@ -1,0 +1,21 @@
+{
+  "name": "phpunit-scheduler",
+  "version": "1.0.0",
+  "description": "Scheduler for phpunit",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@bitbucket.org/JohannesTegner/phpunit-scheduler.git"
+  },
+  "keywords": [
+    "Scheduler"
+  ],
+  "author": "Johannes Tegnér",
+  "license": "-",
+  "dependencies": {
+    "node-yolog": "^1.0.0"
+  }
+}
