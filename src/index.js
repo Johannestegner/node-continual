@@ -3,13 +3,15 @@ process.title = 'phpunit-scheduler';
 
 require('./pollyfills.js');
 
-var exec   = require('child_process').exec;
+var async   = require('async');
+var exec    = require('child_process').exec;
 var log     = require('node-yolog');
 
 
 var editArg = process.argv.find(function(element, index, array) {
     return element.indexOf('-edit') !== -1;
 });
+
 if(editArg) {
     log.info('Open config.json to edit settings.');
     process.kill();
@@ -26,8 +28,15 @@ if(intervalArg) {
 
 // Fetch the notifier to use.
 var config = require('./../config.json');
-var notifier = require('./' + config.notifier);
+var notifiers = [];
+for(var i= 0,c=config.notifiers.length;i<c;i++) {
+    notifiers.push(require(config.notifiers[i]));
+}
 
+/**
+ * Run the test (phpunit) in current dir.
+ * @param {function} callback Callback to fire when done: function(message).
+ */
 var runTest = function runTest(callback) {
 
     exec('phpunit', function(error, stdout, stderr) {
@@ -37,14 +46,18 @@ var runTest = function runTest(callback) {
 
         if(split[split.length - 3] === 'FAILURES!') {
             log.error(stdout);
-            notifier.sendError("Failures in build.")
+            notifiers.forEach(function(notifier) {
+                notifier.sendError("Failures in build.")
+            });
         }
-
         callback(outMessage);
     });
 
 };
 
+/**
+ * Run the application 'loop'.
+ */
 var run = function run() {
     var handle = setInterval(function() {
         var start = (new Date().getTime());
@@ -55,15 +68,23 @@ var run = function run() {
             var stop = (new Date().getTime());
             var diff = stop - start;
             log.debug(message);
-            notifier.sendSuccess(message, diff, function() {
-
-                log.info('Test done...');
-                log.info('Restarting interval.');
+            async.each(notifiers, function(notifier, next) {
+                notifier.sendSuccess(message, diff, function() {
+                    next();
+                });
+            }, function() {
+                log.info('Notifiers notified.');
+                log.info('Waiting for %s minutes, then running tests again.', interval);
                 run();
             });
+
+
         });
     },  interval * 60 * 1000);
 };
 
 run();
-log.info("Loaded scheduler with interval %d (minutes) and notifier %s", interval, notifier.name());
+log.info("Loaded scheduler with interval %d (minutes) and the following notifiers: ");
+for(var j= 0,q=notifiers.length;j<q;j++) {
+    log.info("%s (%s)", notifiers[j].getName(), notifiers[j].getVersion());
+}

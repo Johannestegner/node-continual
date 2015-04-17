@@ -8,17 +8,20 @@ function OSXTerminal() {
 
 OSXTerminal.prototype.sendError = function sendError(str, callback) {
     this.exec("terminal-notifier -message \"" + str + "\" -sound Sosumi -title \"Build Error\" -group BuilderErr");
-
-
 };
+
 OSXTerminal.prototype.sendSuccess = function sendSuccess(str, time, callback) {
     var fullMessage = str + " - " + " (" + (time / 1000) + " s)";
     // Todo: Use a generic notifier interface, not hard-coded 'terminal-notifier'.
     this.exec("terminal-notifier -message \"" + fullMessage + "\" -title \"Build Done\" -group BuilderMsg", callback);
 };
 
-OSXTerminal.prototype.name = function name() {
+OSXTerminal.prototype.getName = function name() {
     return 'OSXTerminal';
+};
+
+OSXTerminal.prototype.getVersion = function name() {
+    return '1.0.0.0';
 };
 
 module.exports = new OSXTerminal();
