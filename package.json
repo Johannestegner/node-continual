@@ -1,8 +1,7 @@
 {
-  "name": "phpunit-scheduler",
+  "name": "unitschedule",
   "version": "1.0.0",
   "description": "Scheduler for phpunit",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,5 +16,9 @@
   "license": "-",
   "dependencies": {
     "node-yolog": "^1.0.0"
+  },
+  "preferGlobal": "true",
+  "bin": {
+    "unitschedule" : "src/index.js"
   }
 }
