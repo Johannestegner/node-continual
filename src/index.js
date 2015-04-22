@@ -37,7 +37,7 @@ for(var k= 0,c2=config.jobs.length;k<c2;k++) {
 
 /**
  * Run a job loop.
- * @param {JobInterface} job job to run (need to implement the job-interface).
+ * @param {object} job job to run (need to implement the job-interface).
  * @param {int} interval Interval to run the job at (in minutes).
  */
 var run = function run(job, interval) {
