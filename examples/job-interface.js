@@ -13,7 +13,7 @@ var JobInterface = function JobInterface() { };
  * Run the job.
  * @param {function} callback Callback to fire on done: function(error, message, time) - where error should be undefined if no error and message is the message passed to the notifier.
  */
-JobInterface.prototype.runJob = function runJob(callback) { callback('Not implemented.', undefined, 0.0) };
+JobInterface.prototype.runJob = function runJob(callback) { callback('Not implemented.', undefined, 0.0); };
 
 /**
  * Fetch job name.

@@ -4,7 +4,7 @@ if (!Array.prototype.find) {
      * @param {function} predicate - function(item) { return boolean }; Where return value is true if its the correct item else false.
      * @returns {*} Will return undefined if nothing is found, else the found object.
      */
-    Array.prototype.find = function(predicate) {
+    Array.prototype.find = function find(predicate) {
         if (this == null) {
             throw new TypeError('Array.prototype.find called on null or undefined');
         }
@@ -31,7 +31,7 @@ if (!Array.prototype.asyncForEach) {
      * @param {function} callback Callback function to run on all objects in array: function(object, doneCallback);
      * @param {function} done Callback to fire when all are done.
      */
-    Array.prototype.asyncForEach = function(callback, done) {
+    Array.prototype.asyncForEach = function asyncForEach(callback, done) {
         if (this == null) {
             throw new TypeError('Array.prototype.asyncForEach called on null or undefined');
         }
@@ -54,4 +54,25 @@ if (!Array.prototype.asyncForEach) {
             });
         }
     };
+}
+
+if (!Array.prototype.asyncMap) {
+    /**
+     * @param {function} callback Callback to run on each object: function(object, callback) - where callback should pass the result object as arg.
+     * @param {function} done Callback to fire on done: function(list) - Where list is an array of the resulting objects.
+     */
+    Array.prototype.asyncMap = function asyncMap(callback, done) {
+        if (typeof callback !== 'function' || typeof done !== 'function') {
+            throw new TypeError('Callback must be a function');
+        }
+        var result = [];
+        this.asyncForEach(function(object, n) {
+            callback(object, function(resultObj) {
+                result.push(resultObj);
+                n();
+            });
+        }, function() {
+           done(result);
+        });
+    }
 }

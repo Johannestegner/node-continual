@@ -2,25 +2,33 @@
 process.title = 'Continual';
 require('./array-functions.js');
 var log = require('node-yolog');
+var config = require('./../config.json');
+var jobs = [];
+var notifiers = [];
+
 
 // Fetch the notifier to use.
-var config = require('./../config.json');
-var notifiers = [];
-for(var i= 0,c=config.notifiers.length;i<c;i++) {
-    var notifier = require(config.notifiers[i]);
-    notifiers.push(notifier);
+config.notifiers.asyncMap(function(notifierData, next) {
+    var notifier = require(notifierData);
     log.info("Loaded notifier: %s (%s)", notifier.getName(), notifier.getVersion());
-}
-// Fetch jobs.
-var jobs = [];
-for(var k= 0,c2=config.jobs.length;k<c2;k++) {
+    next(notifier);
+}, function(result) {
+    notifiers = result;
+    log.debug('All (%d) notifiers loaded.', notifiers.length);
+});
+
+// Fetch the jobs to use.
+config.jobs.asyncMap(function(jobData, next) {
     var job = {
-        'job': require(config.jobs[k].path)
-        , 'interval': config.jobs[k].interval
+        'job': require(jobData.path)
+        , 'interval': jobData.interval
     };
-    jobs.push(job);
     log.info('Loaded job: %s (%s) - Interval: %d', job.job.getName(), job.job.getVersion(), job.interval);
-}
+    next(job);
+}, function(result) {
+    jobs = result;
+    log.debug('All (%d) jobs loaded.', jobs.length);
+});
 
 /**
  * Run a job loop.
@@ -51,7 +59,6 @@ var run = function run(job, interval) {
         });
     },  interval * 60 * 1000);
 };
-
 
 log.info("Continual loaded and ready. Starting jobs.");
 jobs.asyncForEach(function(job, d) {
