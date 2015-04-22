@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-process.title = 'phpunit-scheduler';
+process.title = 'Continual';
 
 require('./pollyfills.js');
 
@@ -69,7 +69,7 @@ var run = function run(job, interval) {
 };
 
 
-log.info("Loaded scheduler. Starting jobs.");
+log.info("Continual loaded and ready. Starting jobs.");
 jobs.forEach(function(job) {
     run(job.job, job.interval);
 });
