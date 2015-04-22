@@ -19,8 +19,7 @@
   "author": "Johannes Tegnér",
   "license": "MIT",
   "dependencies": {
-    "node-yolog": "1.0.0",
-    "async": "0.9.0"
+    "node-yolog": "1.0.0"
   },
   "preferGlobal": "true",
   "bin": {

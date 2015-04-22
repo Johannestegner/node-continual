@@ -1,20 +1,7 @@
 #! /usr/bin/env node
 process.title = 'Continual';
-
 require('./pollyfills.js');
-
-var async   = require('async');
-var log     = require('node-yolog');
-
-
-var editArg = process.argv.find(function(element, index, array) {
-    return element.indexOf('-edit') !== -1;
-});
-
-if(editArg) {
-    log.info('Open config.json to edit settings.');
-    process.kill();
-}
+var log = require('node-yolog');
 
 // Fetch the notifier to use.
 var config = require('./../config.json');
@@ -42,19 +29,18 @@ for(var k= 0,c2=config.jobs.length;k<c2;k++) {
  */
 var run = function run(job, interval) {
     var handle = setInterval(function() {
-
         log.info('Starting %s...', job.getName());
         clearInterval(handle);
-        job.runJob(function(error, message, time) {
 
-            async.each(notifiers, function(notifier, next) {
+        job.runJob(function(error, message, time) {
+            notifiers.asyncForEach(function(notifier, cb) {
                 if(error) {
                     notifier.sendError(error, function() {
-                        next();
+                        cb();
                     });
                 } else {
                     notifier.sendSuccess(message, time, function() {
-                        next();
+                        cb();
                     });
                 }
             }, function() {
@@ -62,15 +48,16 @@ var run = function run(job, interval) {
                 log.info('Waiting for %s minutes, then running job again.', interval);
                 run(job, interval);
             });
-
         });
-
     },  interval * 60 * 1000);
 };
 
 
 log.info("Continual loaded and ready. Starting jobs.");
-jobs.forEach(function(job) {
+jobs.asyncForEach(function(job, d) {
     run(job.job, job.interval);
+    d();
+}, function() {
+    log.info('All jobs started.');
 });
 
