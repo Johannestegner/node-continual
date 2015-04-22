@@ -15,10 +15,10 @@ var NotifierInterface = function NotifierInterface() { };
 NotifierInterface.prototype.getName = function() { return ""; };
 
 /**
- * Fetches the version of the notifier.
+ * Fetches the version of the notifier - 'x.x.x.x'.
  * @returns {string} Notifier version.
  */
-NotifierInterface.prototype.getVersion = function() { return "0" };
+NotifierInterface.prototype.getVersion = function() { return "0.0.0.0" };
 
 /**
  * Notifies with a error.

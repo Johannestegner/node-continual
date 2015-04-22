@@ -1,3 +1,9 @@
 {
-  "notifiers": ["./notifiers/osx-terminal.js"]
+  "notifiers": ["./notifiers/osx-terminal.js"],
+  "jobs": [
+    {
+      "path": "./jobs/phpunit.js",
+      "interval": 5
+    }
+  ]
 }
