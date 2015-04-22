@@ -4,7 +4,6 @@ process.title = 'phpunit-scheduler';
 require('./pollyfills.js');
 
 var async   = require('async');
-var exec    = require('child_process').exec;
 var log     = require('node-yolog');
 
 
@@ -33,7 +32,7 @@ for(var k= 0,c2=config.jobs.length;k<c2;k++) {
         , 'interval': config.jobs[k].interval
     };
     jobs.push(job);
-    log.info('Loaced job: %s (%s) - Interval: %d', job.job.getName(), job.job.getVersion(), job.interval);
+    log.info('Loaded job: %s (%s) - Interval: %d', job.job.getName(), job.job.getVersion(), job.interval);
 }
 
 /**
@@ -59,8 +58,7 @@ var run = function run(job, interval) {
                     });
                 }
             }, function() {
-                log.info('%s Completed in %d.', job.getName(), time);
-                log.info('Notifiers notified.');
+                log.info('%s Completed in %d s.', job.getName(), (time / 1000));
                 log.info('Waiting for %s minutes, then running job again.', interval);
                 run(job, interval);
             });

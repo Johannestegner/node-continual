@@ -1,24 +1,29 @@
 {
-  "name": "unitschedule",
+  "name": "continual",
   "version": "1.0.0",
-  "description": "Scheduler for phpunit",
+  "description": "Continual task scheduler.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@bitbucket.org/JohannesTegner/phpunit-scheduler.git"
+    "url": "ssh://git@github.com:Johannestegner/node-continual.git"
   },
   "keywords": [
-    "Scheduler"
+    "Scheduler",
+    "timed tasks",
+    "tasks",
+    "interval",
+    "continual"
   ],
   "author": "Johannes Tegnér",
   "license": "-",
   "dependencies": {
-    "node-yolog": "^1.0.0"
+    "node-yolog": "1.0.0",
+    "async": "0.9.0"
   },
   "preferGlobal": "true",
   "bin": {
-    "unitschedule" : "src/index.js"
+    "continual" : "src/index.js"
   }
 }
