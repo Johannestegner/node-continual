@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 process.title = 'Continual';
-require('./pollyfills.js');
+require('./array-functions.js');
 var log = require('node-yolog');
 
 // Fetch the notifier to use.
