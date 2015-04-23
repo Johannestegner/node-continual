@@ -1,12 +1,10 @@
-﻿var util = require('util');
-var JobRunner = require('./JobRunner.js');
-
-/**
+﻿/**
  * Continual main constructor.
  */
 function Continual() {
-    
     var _self           = this;
+    var JobRunner       = require('./JobRunner.js');
+    var util            = require('util');    
     var _fs             = require('fs');
     var _eol            = process.platform === 'win32' ? '\r\n' : '\n';
     var _dir            = '.continual';
@@ -80,8 +78,8 @@ function Continual() {
     var loadConfig = function loadConfig() {
         // Load config file.
         var config = require(process.cwd() + '/' + _configFile, 'UTF8');
-        if (config.jobs.length === 0 || config.notifiers.length === 0) {
-            log.error('Jobs and Notifiers can not be empty.');
+        if (config.jobs.length === 0) {
+            log.error('You have not defined any jobs. Please do this and try again.');
             return false;
         }
         return config;
@@ -94,7 +92,7 @@ function Continual() {
     var loadJobs = function loadJobs(config) {
         // Fetch the jobs to use.
         config.jobs.asyncMap(function (jobData, next) {
-            var runner = new JobRunner(jobData, _dir);
+            var runner = new JobRunner(jobData, _dir, _self);
             log.info('Loaded job: %s (%s) - Interval: %d', runner.getName(), runner.getVersion(), runner.getInterval());
             next(runner);
         }, function (result) {
