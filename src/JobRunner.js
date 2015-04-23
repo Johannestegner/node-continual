@@ -2,19 +2,23 @@
 
 /**
  * Wrapper for jobs.
+ * @param {object} data Data object for job: { 'path': 'path/to/the/job/script.js', 'interval' (int)minutes };
+ * @param {string} baseDir Base directory of the continual instance.
+ * @param {Continual} continual The continual parent object.
  */
-function JobRunner(data, baseDir) {
+function JobRunner(data, baseDir, continual) {
     
-    var _self = this;
-    var _jobPath = util.format('%s/%s/%s', process.cwd(), baseDir, data.path);
-    var _job = require(_jobPath);
-    var _interval = data.interval;
-    var _hInt = null;
-    var _stopped = false;
+    var _self       = this;
+    var _continual  = continual;
+    var _jobPath    = util.format('%s/%s/%s', process.cwd(), baseDir, data.path);
+    var _job        = require(_jobPath);
+    var _interval   = data.interval;
+    var _hInt       = null;
+    var _stopped    = false;
     
     /**
      * Get name of the current job.
-     * @param {string} Name.
+     * @returns {string} Name.
      */
     this.getName = function getName() {
         return _job.getName();
@@ -22,7 +26,7 @@ function JobRunner(data, baseDir) {
     
     /**
      * Get current job version.
-     * @param {string} Version. 
+     * @returns {string} Version. 
      */
     this.getVersion = function getVersion() {
         return _job.getVersion();
@@ -41,21 +45,26 @@ function JobRunner(data, baseDir) {
      */
     var _run = function _run() {
         if (_stopped) {
+            log.debug('Job has been stopped. Will not continue.');
             return;
         }
         _hInt = setInterval(function () {
+            log.debug('Running the task.');
             // Tick!  Clear the interval, cause we don't want to start the job-timer till after its done.
             clearInterval(_hInt);
             // Run the actual job...
             _job.runJob(function (error, message, time) {
+                log.debug('Job was done. Has error? %s. Time it took: %d ms.', (error !== undefined), time);
                 // Job is done, alert notifiers.
-                notifiers.asyncForEach(function (notifier, cb) {
+                _continual.notifiers.asyncForEach(function (notifier, cb) {
+                    log.debug('Alerting notifier %s.', notifier.getName());
                     if (error) {
                         notifier.sendError(error, cb);
                     } else {
                         notifier.sendSuccess(message, time, cb);
                     }
                 }, function () {
+                    log.debug('All notifiers have been notified. Restarting loop!');
                     // All notifiers alerted, re-start the job!
                     _run();
                 });
@@ -67,7 +76,7 @@ function JobRunner(data, baseDir) {
      * Run a job loop.
      */
     this.run = function run() {
-        log.info('Starting the job %s.', _self.getName());
+        log.debug('Starting the job %s.', _self.getName());
         _run();
     };
     
