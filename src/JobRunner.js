@@ -14,7 +14,6 @@ function JobRunner(data, baseDir, continual) {
     var _jobPath    = util.format('%s/%s/%s', process.cwd(), baseDir, data.path);
     var _job        = require(_jobPath);
     var _interval   = new TimedEntry(data.interval);
-    var _hInt       = null;
     var _stopped    = false;
     var _subTasks   = [];
     
@@ -55,62 +54,21 @@ function JobRunner(data, baseDir, continual) {
     this.getInterval = function getInterval() {
         return _interval.getNext();
     };
-    
-    var _runSubTasks = function runSubTasks(cb) {
-        _subTasks.asyncForEach()
-    };
 
-    /**
-     * Internal job loop.
-     */
-    var _run = function _run() {
-        if (_stopped) {
-            log.debug('Job has been stopped. Will not continue.');
-            return;
-        }
-        _hInt = setInterval(function () {
-            log.debug('Running the task.');
-            // Tick!  Clear the interval, cause we don't want to start the job-timer till after its done.
-            clearInterval(_hInt);
-            _runOnce(function () {
-                log.debug('All notifiers have been notified. Restarting loop!');
-                // All notifiers alerted, re-start the job!
-                _run();
-            });
-        }, _interval.getNext());
-    };
-    
-    /**
-     * Internal job run function.
-     */
-    var _runOnce = function _runOnce(callback) {
-        // Run the actual job...
-        _job.runJob(function (error, message, time) {
-            log.debug('Job was done. Has error? %s. Time it took: %d ms.', (error !== undefined), time);
-            _continual.notifiers.asyncForEach(function (notifier, cb) {
-                log.debug('Alerting notifier %s.', notifier.getName());
-                if (error) {
-                    notifier.sendError(error, cb);
-                } else {
-                    notifier.sendSuccess(message, time, cb);
-                }
-            }, function () {
-                log.debug('Running all subtasks.');
-                _subTasks.asyncForEach(function (subTask, cb) {
-                    subTask.runOnce(cb);
-                }, function () {
-                    callback();
-                });
-            });
-        });
-    };
-    
     /**
      * Run a job loop.
      */
     this.run = function run() {
-        log.debug('Starting the job %s.', _self.getName());
-        _run();
+        log.debug('Run invoked. Will run the job %s.', _self.getName());
+        if (_stopped) {
+            log.debug('Job has been stopped. Will not continue.');
+            return;
+        }
+
+        _self.runOnce(function () {
+            log.debug('Job (and all subtasks) done. Restarting loop.');
+            _self.run();
+        });
     };
     
     /**
@@ -120,10 +78,27 @@ function JobRunner(data, baseDir, continual) {
         log.debug('Run once invoked. Will run the job in %d ms.', _interval.getNext());
         setTimeout(function () {
             log.debug('Running the job %s once.', _self.getName());
-            _runOnce(function () {
-                log.debug('Run once done.');
-                callback();
+            
+            // Run the actual job.
+            _job.runJob(function (error, message, time) {
+                log.debug('Job was done. Has error? %s. Time it took: %d ms.', (error !== undefined), time);
+                _continual.notifiers.asyncForEach(function (notifier, cb) {
+                    log.debug('Alerting notifier %s.', notifier.getName());
+                    if (error) {
+                        notifier.sendError(error, cb);
+                    } else {
+                        notifier.sendSuccess(message, time, cb);
+                    }
+                }, function () {
+                    log.debug('Running all subtasks.');
+                    _subTasks.asyncForEach(function (subTask, cb) {
+                        subTask.runOnce(cb);
+                    }, function () {
+                        callback();
+                    });
+                });
             });
+
         }, _interval.getNext());
     };
     

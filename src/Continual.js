@@ -38,7 +38,7 @@ function Continual() {
      * continual to run, in the current directory.
      */
     this.init = function init() {
-        log.info('Initializing .continual in current directory.');
+        log.info('Initializing continual in current directory.');
         
         if (_fs.existsSync(_dir)) {
             log.error('There is already a %s directory in this directory. Please use that one or remove it and run init command again.', _dir);

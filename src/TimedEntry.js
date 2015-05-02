@@ -9,6 +9,7 @@
  *   unit: 'ms'|'s'|'m'|'h'|'d'
  * }
  * </pre>
+ * 
  * Example:
  * <pre>
  * {
