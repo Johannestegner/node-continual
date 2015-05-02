@@ -1,21 +1,19 @@
 # Continual
 ###  Run tasks on interval.
 
-Simple continual task runner written in node js.  
+Simple task runner written in node js.  
   
   
 ## Installation  
-Continual is proffered to be installed globally.  
+Continual is preffered to be installed globally.  
 ```
 [Installation command here whenever package is published]
 ```
-But should run fine as a local installation too.  
-Examples of jobs and notifiers can be found in the `example` folder.  
   
   
 ## Usage
-Continual currently needs to be intiailized in the directory where its job will be run from.  
-You could of courser run jobs from anywhere, and let them do whatever they want, so its not in any type of jail.  
+Continual needs to be intiailized in the directory where its job will be run from.  
+You could of course run jobs from anywhere, and let them do whatever they want, so its not in any type of "jail".  
 Initialization is easy, just point your terminal to the directory where you want it to run and summon it with the following magic words:
 
 ```
@@ -58,7 +56,15 @@ A fresh config file should look something like:
 In the `jobs` array, we want to create a new json object for the job.  
 Each job requires two properties: `path` and `interval`.  
 The path is the path to the job script and is relative to the .continual folder.  
-And the interval property specifies how often to run the job (currently in minutes).  
+And the interval property specifies how often to run the job.  
+The interval object takes two key value pairs: `value` which is a number, and `unit` which have to be one of the following:  
+  
+* 'd' : Days - (1 day - 24h)
+* 'h' : Hours
+* 'm' : Minutes
+* 's' : Seconds
+* 'ms' : Milliseconds
+  
 To add a script that currently dwells in the `jobs` folder, make your file look something like:  
   
 ```json
@@ -67,13 +73,17 @@ To add a script that currently dwells in the `jobs` folder, make your file look 
     "jobs": [
       { 
         "path": "Jobs/superawesomejob.js",
-        "interval": 5
+        "interval": {
+            "value": 5,
+            "unit": 'm'
+        }
       }
     ]
 }
 ```
 
 Thats it, your job will now run every 5 minutes!  
+
   
 But... Without a notifier it won't let you know that its done!  
 So next we try install a notifier.
@@ -118,7 +128,18 @@ Okay, that was uncalled for.
 But I would really recommend writing your own, its super simple, and its a bit more customisable than using my example scripts...  
 So how to do it?  
   
+For description on how to implement a job, check out the following [Wiki](https://github.com/Johannestegner/node-continual/wiki/Create-Jobs) entry.  
+For description on how to implement a notifier, check out the following [Wiki](https://github.com/Johannestegner/node-continual/wiki/Create-Notifier) entry.
+
 Check the [MakeYourOwn.md](MakeYourOwn.md) File for detailed description on how to do it!
+
+## Planned and in dev.
+
+Planned new features can be found in the issue tracker under either `feature` or `enhancement` tags.  
+
+##### Request!
+If there is any changes you wish to see, please add a request in the issue tracker, or even 
+write it yourself and create a pull request!
 
 
 ## Remarks

@@ -1,0 +1,12 @@
+{
+  "notifiers": [""],
+  "jobs": [
+    {
+      "path": "",
+      "interval": {
+        "value": 5,
+        "unit": "m"
+      }
+    }
+  ]
+}

@@ -19,7 +19,7 @@ var getArg = function getArg(command) {
     return process.argv.find(function (element, index, array) {
         return element.indexOf(command) !== -1;
     });
-}
+};
 
 /**
  *  List of valid arguments.

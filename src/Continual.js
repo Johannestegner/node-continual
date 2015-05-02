@@ -1,5 +1,5 @@
 ﻿/**
- * Continual main constructor.
+ * Continual main object.
  */
 function Continual() {
     var _self           = this;
@@ -15,17 +15,15 @@ function Continual() {
     this.jobs           = [];
     this.notifiers      = [];
     this.config         = {};
-    
-    /** 
-     * Available commands.
-     */
+
+    // Available commands.
     var _commands = [
         {
             'command' : '-help'
             , 'action': 'Show this command list.'
         },
         {
-            'command' : '-init' // Spaces to format output neater.
+            'command' : '-init'
             , 'action': 'Initialize continual in current directory.'
         },
         {
@@ -75,7 +73,7 @@ function Continual() {
      * Load the config data file.
      * @returns {boolean|object} Config object on success else false.
      */
-    var loadConfig = function loadConfig() {
+    var _loadConfig = function _loadConfig() {
         // Load config file.
         var config = require(process.cwd() + '/' + _configFile, 'UTF8');
         if (config.jobs.length === 0) {
@@ -87,9 +85,10 @@ function Continual() {
     
     /**
      * Load jobs from the config file.
+     * @param {object} config file as object.
      * @returns {boolean} True on success else false.
      */
-    var loadJobs = function loadJobs(config) {
+    var _loadJobs = function _loadJobs(config) {
         // Fetch the jobs to use.
         config.jobs.asyncMap(function (jobData, next) {
             var runner = new JobRunner(jobData, _dir, _self);
@@ -100,13 +99,14 @@ function Continual() {
             log.debug('All (%d) jobs loaded.', _self.jobs.length);
         });
         return true;
-    }
+    };
     
     /**
      * Load notifiers from the config file.
+     * @param {object} config file as object.
      * @returns {boolean} True on success else false.
      */
-    var loadNotifiers = function loadNotifiers(config) {
+    var _loadNotifiers = function _loadNotifiers(config) {
         // Fetch the notifier to use.
         config.notifiers.asyncMap(function (notifierData, next) {
             var notifier = require(process.cwd() + '/' + _dir + '/' + notifierData);
@@ -117,7 +117,7 @@ function Continual() {
             log.debug('All (%d) notifiers loaded.', _self.notifiers.length);
         });
         return true;
-    }
+    };
     
     /**
      * Load continual in current directory.
@@ -129,14 +129,14 @@ function Continual() {
             log.info('Type `continual -help` for commands.');
             return false;
         }
-        var config = loadConfig();
+        var config = _loadConfig();
         if (!config) {
             return false;
         }
-        if (!loadNotifiers(config)) {
+        if (!_loadNotifiers(config)) {
             return false;
         }
-        if (!loadJobs(config)) {
+        if (!_loadJobs(config)) {
             return false;
         }
         return true;

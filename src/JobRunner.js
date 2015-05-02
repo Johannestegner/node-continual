@@ -1,8 +1,9 @@
-﻿var util = require('util');
+﻿var TimedEntry = require('./TimedEntry.js');
+var util = require('util');
 
 /**
  * Wrapper for jobs.
- * @param {object} data Data object for job: { 'path': 'path/to/the/job/script.js', 'interval' (int)minutes };
+ * @param {object} data Data object for job: { 'path': 'path/to/the/job/script.js', 'interval' { 'value': number, unit: 'unit' };
  * @param {string} baseDir Base directory of the continual instance.
  * @param {Continual} continual The continual parent object.
  */
@@ -12,7 +13,7 @@ function JobRunner(data, baseDir, continual) {
     var _continual  = continual;
     var _jobPath    = util.format('%s/%s/%s', process.cwd(), baseDir, data.path);
     var _job        = require(_jobPath);
-    var _interval   = data.interval;
+    var _interval   = new TimedEntry(data.interval);
     var _hInt       = null;
     var _stopped    = false;
     
@@ -22,7 +23,7 @@ function JobRunner(data, baseDir, continual) {
      */
     this.getName = function getName() {
         return _job.getName();
-    }
+    };
     
     /**
      * Get current job version.
@@ -30,14 +31,14 @@ function JobRunner(data, baseDir, continual) {
      */
     this.getVersion = function getVersion() {
         return _job.getVersion();
-    }
+    };
     
     /**
      * Get job interval.
-     * @returns {int} Interval in minutes.
+     * @returns {int} Interval in ms.
      */
     this.getInterval = function getInterval() {
-        return _interval;
+        return _interval.getNext();
     };
     
     /**
@@ -69,7 +70,7 @@ function JobRunner(data, baseDir, continual) {
                     _run();
                 });
             });
-        }, _interval * 1000 * 60);
+        }, _interval.getNext());
     };
     
     /**
