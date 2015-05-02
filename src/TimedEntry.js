@@ -23,10 +23,11 @@ function TimedEntry(data) {
     var _interval;
     var _units = { 'd': 24 * 60 * 60 * 1000, 'h': 60 * 60 * 1000, 'm': 60 * 1000, 's': 1000, 'ms': 1 };
     
-    if (_units.indexOf(data.unit) === -1) {
-        throw new error('Failed to calculate time, unit is not valid: ' + data.unit);
+    if ((data.unit in _units) === false) {
+        log.error('Failed to calculate time, unit is not valid: "' + data.unit + '". Defaulted to 10 minutes. Please fix this and restart continual.');
+        _interval = { value: 10, unit: 'm' };
     }
-
+    
     // Get the actual time in ms.
     _interval = data.value * _units[data.unit];
     
