@@ -31,8 +31,8 @@ When continual is intialized, it will allow you to run the 'start command', whic
 ```
 
 Yay, it starts!  
-But... we have a small issue here. No jobs nor notifiers are installed...  
-Sooo.... how to install a job or a notifier?
+But... we have a small issue here. No jobs nor notifiers are installed..!  
+Sooo... how to install a job or a notifier?
 
 ##### Installation of Jobs.
 
@@ -75,7 +75,7 @@ To add a script that currently dwells in the `jobs` folder, make your file look 
         "path": "Jobs/superawesomejob.js",
         "interval": {
             "value": 5,
-            "unit": 'm'
+            "unit": "m"
         }
       }
     ]
@@ -131,18 +131,37 @@ So how to do it?
 For description on how to implement a job, check out the following [Wiki](https://github.com/Johannestegner/node-continual/wiki/Create-Jobs) entry.  
 For description on how to implement a notifier, check out the following [Wiki](https://github.com/Johannestegner/node-continual/wiki/Create-Notifier) entry.
 
-Check the [MakeYourOwn.md](MakeYourOwn.md) File for detailed description on how to do it!
-
 ## Planned and in dev.
 
-Planned new features can be found in the issue tracker under either `feature` or `enhancement` tags.  
+Planned new features can be found in the issue tracker under either [`feature`](https://github.com/Johannestegner/node-continual/labels/feature) or [`enhancement`](https://github.com/Johannestegner/node-continual/labels/enhancement) tags.  
 
 ##### Request!
-If there is any changes you wish to see, please add a request in the issue tracker, or even 
+If there is any changes you wish to see, please add a request in the [issue tracker](https://github.com/Johannestegner/node-continual/issues), or even 
 write it yourself and create a pull request!
 
+---
 
-## Remarks
-This scheduler is distributed as is. Check the license, and feel free to contribute, I might or might not accept pull requests! Try me!  
-Report all issues you find report-worthy in the issue tracker here on github.
+## License
+```
+The MIT License (MIT)
 
+Copyright (c) 2015 Johannes Tegnér
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
