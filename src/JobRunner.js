@@ -16,7 +16,22 @@ function JobRunner(data, baseDir, continual) {
     var _interval   = new TimedEntry(data.interval);
     var _hInt       = null;
     var _stopped    = false;
+    var _subTasks   = [];
     
+    if (data.then !== undefined) {
+        data.then.forEach(function (taskData) {
+            _subTasks.push(new JobRunner(taskData, baseDir, continual));
+        });
+    }
+    
+    /**
+     * Get number of subtasks this given job have.
+     * @returns {number} Subtask count.
+     */
+    this.subTaskCount = function subTaskCount() {
+        return _subTasks.length;
+    }
+
     /**
      * Get name of the current job.
      * @returns {string} Name.
@@ -41,6 +56,10 @@ function JobRunner(data, baseDir, continual) {
         return _interval.getNext();
     };
     
+    var _runSubTasks = function runSubTasks(cb) {
+        _subTasks.asyncForEach()
+    };
+
     /**
      * Internal job loop.
      */
@@ -53,24 +72,37 @@ function JobRunner(data, baseDir, continual) {
             log.debug('Running the task.');
             // Tick!  Clear the interval, cause we don't want to start the job-timer till after its done.
             clearInterval(_hInt);
-            // Run the actual job...
-            _job.runJob(function (error, message, time) {
-                log.debug('Job was done. Has error? %s. Time it took: %d ms.', (error !== undefined), time);
-                // Job is done, alert notifiers.
-                _continual.notifiers.asyncForEach(function (notifier, cb) {
-                    log.debug('Alerting notifier %s.', notifier.getName());
-                    if (error) {
-                        notifier.sendError(error, cb);
-                    } else {
-                        notifier.sendSuccess(message, time, cb);
-                    }
-                }, function () {
-                    log.debug('All notifiers have been notified. Restarting loop!');
-                    // All notifiers alerted, re-start the job!
-                    _run();
-                });
+            _runOnce(function () {
+                log.debug('All notifiers have been notified. Restarting loop!');
+                // All notifiers alerted, re-start the job!
+                _run();
             });
         }, _interval.getNext());
+    };
+    
+    /**
+     * Internal job run function.
+     */
+    var _runOnce = function _runOnce(callback) {
+        // Run the actual job...
+        _job.runJob(function (error, message, time) {
+            log.debug('Job was done. Has error? %s. Time it took: %d ms.', (error !== undefined), time);
+            _continual.notifiers.asyncForEach(function (notifier, cb) {
+                log.debug('Alerting notifier %s.', notifier.getName());
+                if (error) {
+                    notifier.sendError(error, cb);
+                } else {
+                    notifier.sendSuccess(message, time, cb);
+                }
+            }, function () {
+                log.debug('Running all subtasks.');
+                _subTasks.asyncForEach(function (subTask, cb) {
+                    subTask.runOnce(cb);
+                }, function () {
+                    callback();
+                });
+            });
+        });
     };
     
     /**
@@ -79,6 +111,20 @@ function JobRunner(data, baseDir, continual) {
     this.run = function run() {
         log.debug('Starting the job %s.', _self.getName());
         _run();
+    };
+    
+    /**
+     * Run a job once.
+     */
+    this.runOnce = function runOnce(callback) {
+        log.debug('Run once invoked. Will run the job in %d ms.', _interval.getNext());
+        setTimeout(function () {
+            log.debug('Running the job %s once.', _self.getName());
+            _runOnce(function () {
+                log.debug('Run once done.');
+                callback();
+            });
+        }, _interval.getNext());
     };
     
     /**

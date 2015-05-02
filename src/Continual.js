@@ -92,7 +92,7 @@ function Continual() {
         // Fetch the jobs to use.
         config.jobs.asyncMap(function (jobData, next) {
             var runner = new JobRunner(jobData, _dir, _self);
-            log.info('Loaded job: %s (%s) - Interval: %d', runner.getName(), runner.getVersion(), runner.getInterval());
+            log.info('Loaded job: %s (%s) - Interval: %d (%d sub-tasks)', runner.getName(), runner.getVersion(), runner.getInterval(), runner.subTaskCount());
             next(runner);
         }, function (result) {
             _self.jobs = result;
