@@ -23,6 +23,6 @@
   },
   "preferGlobal": "true",
   "bin": {
-    "continual" : "src/index.js"
+    "continual" : "main.js"
   }
 }
