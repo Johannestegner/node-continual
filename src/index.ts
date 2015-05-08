@@ -1,13 +1,12 @@
 /// <reference path="../typings/node/node.d.ts"/>
 /// <reference path="../typings/node-yolog.d.ts"/>
-/// <reference path="helpers/arrayextend.ts"/> // Referencing arrayextend.ts here will apply the polyfills.
+/// <reference path="helpers/arrayextend.ts"/>
+require('./helpers/arrayextend');
 import Structures = require('./helpers/structures');
 import fs = require('fs');
-import logger = require('node-yolog');
+import yolog = require('node-yolog');
 import Continual = require('./continual');
-// Set up the global logger object.
-declare var yolog: logger.Yolog;
-global.yolog = logger;
+import CommandTypes = require('./command-types');
 
 // Continual default directory and config file.
 var _dir            = '.continual';
@@ -24,8 +23,6 @@ var hasArg = function getArg(command: Structures.KvP<string, string>) {
   });
   return out !== undefined;
 };
-
-var CommandTypes = Continual.CommandTypes;
 
 if (!hasArg(CommandTypes.DEBUG)) {
   yolog.set(false, 'debug', 'trace', 'todo');
@@ -70,6 +67,6 @@ if (hasArg(CommandTypes.INIT)) {
   console.log('-%s\t%s\n', CommandTypes.DEBUG.key, CommandTypes.DEBUG.value);
 } else {
   // Create a new Continual object and start.
-  var continual = new Continual.Continual(_configFile);
+  var continual = new Continual(_configFile);
   continual.start();
 }

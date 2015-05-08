@@ -1,7 +1,11 @@
+/// <reference path="../typings/node/node.d.ts"/>
+/// <reference path="../typings/node-yolog.d.ts"/>
+/// <reference path="helpers/arrayextend.ts"/>
+require('./helpers/arrayextend');
 var fs = require('fs');
-var logger = require('node-yolog');
+var yolog = require('node-yolog');
 var Continual = require('./continual');
-global.yolog = logger;
+var CommandTypes = require('./command-types');
 var _dir = '.continual';
 var _configFile = _dir + '/config.json';
 var hasArg = function getArg(command) {
@@ -10,7 +14,6 @@ var hasArg = function getArg(command) {
     });
     return out !== undefined;
 };
-var CommandTypes = Continual.CommandTypes;
 if (!hasArg(CommandTypes.DEBUG)) {
     yolog.set(false, 'debug', 'trace', 'todo');
 }
@@ -52,6 +55,6 @@ else if (hasArg(CommandTypes.HELP)) {
     console.log('-%s\t%s\n', CommandTypes.DEBUG.key, CommandTypes.DEBUG.value);
 }
 else {
-    var continual = new Continual.Continual(_configFile);
+    var continual = new Continual(_configFile);
     continual.start();
 }

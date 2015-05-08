@@ -1,29 +1,16 @@
 /// <reference path="../typings/node/node.d.ts"/>
 /// <reference path="../typings/node-yolog.d.ts"/>
-import logger = require('node-yolog');
+import yolog = require('node-yolog');
 import Notifier = require('./notifier');
 import Data = require('./config-data');
 import Task = require('./task');
-import Structures = require('./helpers/structures');
-
-declare var yolog: logger.Yolog;
-
-/**
- * CommandTypes.
- * Contains key value pairs for commands and their discriptions.
- */
-export class CommandTypes {
-  public static DEBUG: Structures.KvP<string, string> = new Structures.KvP<string, string>('debug', 'Debug, will display more output.');
-  public static INIT: Structures.KvP<string, string> = new Structures.KvP<string, string>('init', 'Initialize continual in current directory.');
-  public static HELP: Structures.KvP<string, string> = new Structures.KvP<string, string>('help', 'Show this command list.');
-}
 
 /**
  * Continual main class.
  * Contains all notifiers and tasks, initializes
  * them and starts them.
  */
-export class Continual {
+class Continual {
   
   private notifiers: Array<Notifier>;
   private tasks: Array<Task>;
@@ -56,7 +43,9 @@ export class Continual {
     this.notifiers = new Array<Notifier>();
 
     for (var i = 0, count = data.notifiers.length; i < count; i++) {
-      this.notifiers.push(new Notifier(data.notifiers[i]));
+      var notifier = new Notifier(data.notifiers[i]);
+      this.notifiers.push(notifier);
+      yolog.info('Loaded Notifier "%s" - v%s', notifier.getName(), notifier.getVersion());
     }
     yolog.info('Initialized %d notifiers.', this.notifiers.length);
     
@@ -66,7 +55,9 @@ export class Continual {
     this.tasks = new Array<Task>();
     
     for (var i = 0, count = data.jobs.length; i < count; i++) {
-      this.tasks.push(new Task(data.jobs[i], this));
+      var task = new Task(data.jobs[i], this);
+      this.tasks.push(task);
+      yolog.info('Loaded Task "%s" - v%s. (total of %d sub-tasks).', task.getName(), task.getVersion(), task.getSubtaskCount());
     }
     yolog.info('Intialized %d Jobs/Tasks.', this.tasks.length);
   }
@@ -82,3 +73,5 @@ export class Continual {
   }
   
 }
+
+export = Continual;

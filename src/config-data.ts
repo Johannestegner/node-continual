@@ -1,27 +1,11 @@
 import fs = require('fs');
-
-/**
- * Serializable interface for conversion to and from json.
- */
-interface Serializable<T> {
-  /**
-   * Deserialize a raw json confing object and populate the 
-   * serializable objects fields.
-   * @param {object} data Json data.
-   * @returns {object} this.
-   */
-  deserialize(data: any): T;
-  
-  // Implement serialization of objects to save config on script installation
-  // This is a future feature.
-  // serialize(): string;
-}
+import ISerializable = require('./interfaces/serializable');
 
 /**
  * IntervalData.
  * Data object containing information about a interval.
  */
-export class IntervalData implements Serializable<IntervalData> {
+export class IntervalData implements ISerializable<IntervalData> {
   
   unit: string;
   value: number;
@@ -58,7 +42,7 @@ export class IntervalData implements Serializable<IntervalData> {
  * NotifierData.
  * Data object containing information about a notifier.
  */
-export class NotifierData implements Serializable<NotifierData> {
+export class NotifierData implements ISerializable<NotifierData> {
   
   id: number;
   path: string;
@@ -95,7 +79,7 @@ export class NotifierData implements Serializable<NotifierData> {
  * TaskData.
  * Data object containing information about a task and its sub-tasks.
  */
-export class TaskData implements Serializable<TaskData> {
+export class TaskData implements ISerializable<TaskData> {
   
   notifiers: Array<number>;
   path: string;
@@ -144,7 +128,7 @@ export class TaskData implements Serializable<TaskData> {
  * exists.
  * The config data object creates all its sub-objects inside, so no need to do this manually.
  */
-export class ConfigData implements Serializable<ConfigData> {
+export class ConfigData implements ISerializable<ConfigData> {
   
   notifiers: Array<NotifierData>;
   jobs: Array<TaskData>;

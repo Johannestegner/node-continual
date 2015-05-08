@@ -1,47 +1,12 @@
 /// <reference path="../typings/node/node.d.ts"/>
 import Data = require('./config-data');
 import Util = require('util');
+import INotifier = require('./interfaces/notifier');
 
 // Currently the notifier object is mainly a script loader whith a id.
 // It could just as well be a dictionary.
 // But in the future it might be used for other stuff too, so I decided to
 // have it as its own class.
-
-/**
- * Notifier interface.
- * All notifier scripts have to follow this interface.
- */
-interface INotifier {
-  /**
-   * Get the name of the notifier.
-   * @returns {string} Name.
-   */
-  getName(): string;
-  /**
-   * Get the notifier version.
-   * @returns {string} Version.
-   */
-  getVersion(): string;
-  /**
-   * Send error message to notifier.
-   * @param {string} error Error message.
-   * @param {function} done Callback to fire on done: function(void) => void.
-   */
-  sendError(error: string, done: () => void): void;
-  /**
-   * Send success message to notifier.
-   * @param {string} message Message to pass to notifier.
-   * @param {number} time Time the job took.
-   * @param {function} done Callback to fire on done: function(void) => void.
-   */
-  sendSuccess(message: string, time: number, done: () => void): void;
-  /**
-   * Send message to notifier.
-   * @param {string} message Message to send.
-   * @param {function} done Callback to fire on done: function(void) => void.
-   */
-  sendMessage(message: string, done: () => void): void;
-}
 
 /**
  * The Notifier object implements the INotifier interface and passes the calls to the script.

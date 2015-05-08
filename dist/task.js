@@ -1,18 +1,24 @@
+/// <reference path="../typings/node/node.d.ts"/>
+/// <reference path="../typings/node-yolog.d.ts"/>
+var yolog = require('node-yolog');
 var Util = require('util');
 var Interval = require('./interval');
 var ContinualTask = (function () {
     function ContinualTask(data, continual) {
+        this.parent = null;
         var path = Util.format('%s/%s/%s', process.cwd(), '.continual', data.path);
         this.script = require(path);
         this.subTasks = new Array();
         this.notifiers = new Array();
         for (var i = 0, count = data.subTasks.length; i < count; i++) {
-            this.subTasks.push(new ContinualTask(data.subTasks[i], continual));
+            var subtask = new ContinualTask(data.subTasks[i], continual);
+            subtask.parent = this;
+            this.subTasks.push(subtask);
         }
         for (var i = 0, count = data.notifiers.length; i < count; i++) {
             var notifier = continual.getNotifier(data.notifiers[i]);
             if (!notifier) {
-                yolog.info('Failed to fetch a notifier (id: %d) for job with name: %s. Id did not exist in the notifier list.', data.notifiers[i], this.script.getName());
+                yolog.info('Failed to fetch a notifier (id: %d) for task with name: %s. Id did not exist in the notifier list.', data.notifiers[i], this.script.getName());
             }
             else {
                 this.notifiers.push(notifier);
@@ -40,14 +46,17 @@ var ContinualTask = (function () {
                         next();
                     });
                 }, function () {
-                    yolog.debug('Done calling sub-tasks. Resetting timer.');
+                    if (!self.parent) {
+                        yolog.info('The task %s and potential subtasks are done running.', self.getName());
+                        yolog.debug('Done calling sub-tasks. Resetting timer.');
+                    }
                     done();
                 });
             });
         });
     };
     ContinualTask.prototype.run = function (callback) {
-        yolog.info('Starting the task named "%s". Will run in: %d seconds.', this.getName(), (this.interval.getNext() / 1000));
+        yolog.info('Running the task "%s"%s in %d seconds.', this.getName(), (this.parent !== null ? ' (Sub-task of "' + this.parent.getName() + '")' : ''), (this.interval.getNext() / 1000));
         var self = this;
         setTimeout(function () {
             self.runJob(function () {
@@ -68,6 +77,13 @@ var ContinualTask = (function () {
     };
     ContinualTask.prototype.getDescription = function () {
         return this.script.getDescription();
+    };
+    ContinualTask.prototype.getSubtaskCount = function () {
+        var total = this.subTasks.length;
+        for (var i = 0, count = this.subTasks.length; i < count; i++) {
+            total += this.subTasks[i].getSubtaskCount();
+        }
+        return total;
     };
     return ContinualTask;
 })();
