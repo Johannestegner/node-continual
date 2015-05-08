@@ -1,40 +1,38 @@
 /// <reference path="../typings/node/node.d.ts"/>
 /// <reference path="../typings/node-yolog.d.ts"/>
-/// <reference path="helpers/arrayextend.ts"/>
-/// <reference path="continual"/>
-
-require('./helpers/arrayextend');
-// Set up the global logger object.
+/// <reference path="helpers/arrayextend.ts"/> // Referencing arrayextend.ts here will apply the polyfills.
+import Structures = require('./helpers/structures');
+import fs = require('fs');
 import logger = require('node-yolog');
+import Continual = require('./continual');
+// Set up the global logger object.
 declare var yolog: logger.Yolog;
 global.yolog = logger;
-import fs = require('fs');
 
 // Continual default directory and config file.
 var _dir            = '.continual';
 var _configFile     = _dir + '/config.json';
 
-// Import the Continual namespace.
-import Continual = require('./continual');
-
 /**
  * Fetch an argument from the argv list.
- * @returns {undefined|string} The argument, if found, or undefined.
+ * @param {object} Command KvP object.
+ * @returns {boolean} If arg is supplied, true, else false.
  */
-var getArg = function getArg(command) {
-    return process.argv.find(function (element, index, array) {
-        return element.indexOf('-' + command) !== -1;
-    });
+var hasArg = function getArg(command: Structures.KvP<string, string>) {
+  var out = process.argv.find(function (element, index, array) {
+    return element.toLowerCase().indexOf('-' + command.key.toLowerCase()) !== -1;
+  });
+  return out !== undefined;
 };
 
-var ArgumentTypes = Continual.ArgumentTypes;
+var CommandTypes = Continual.CommandTypes;
 
-if (getArg(ArgumentTypes.DEBUG) === undefined) {
+if (!hasArg(CommandTypes.DEBUG)) {
   yolog.set(false, 'debug', 'trace', 'todo');
 }
 yolog.debug('Debug mode is on.');
 
-if (getArg(ArgumentTypes.INIT) !== undefined) {
+if (hasArg(CommandTypes.INIT)) {
   var _jobsFolder     = _dir + '/jobs';
   var _notifierFolder = _dir + '/notifiers';
   yolog.info('Initializing continual in current directory.');
@@ -64,13 +62,14 @@ if (getArg(ArgumentTypes.INIT) !== undefined) {
     }
   });
   
-} else if (getArg(ArgumentTypes.HELP) !== undefined) {  
+} else if (hasArg(CommandTypes.HELP)) {  
   // Show the commands using standard output, not the yolog instance.
   console.log('\nAvailable continual commands & options:\n');
-  console.log('-%s\t%s', ArgumentTypes.INIT, ArgumentTypes.getDescription(ArgumentTypes.INIT));
-  console.log('-%s\t%s', ArgumentTypes.HELP, ArgumentTypes.getDescription(ArgumentTypes.HELP));
-  console.log('-%s\t%s\n', ArgumentTypes.DEBUG, ArgumentTypes.getDescription(ArgumentTypes.DEBUG));
+  console.log('-%s\t%s', CommandTypes.INIT.key, CommandTypes.INIT.value);
+  console.log('-%s\t%s', CommandTypes.HELP.key, CommandTypes.HELP.value);
+  console.log('-%s\t%s\n', CommandTypes.DEBUG.key, CommandTypes.DEBUG.value);
 } else {
   // Create a new Continual object and start.
   var continual = new Continual.Continual(_configFile);
+  continual.start();
 }

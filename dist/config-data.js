@@ -21,25 +21,25 @@ var NotifierData = (function () {
     return NotifierData;
 })();
 exports.NotifierData = NotifierData;
-var JobData = (function () {
-    function JobData() {
+var TaskData = (function () {
+    function TaskData() {
         this.subTasks = new Array();
         this.notifiers = new Array();
     }
-    JobData.prototype.deserialize = function (data) {
+    TaskData.prototype.deserialize = function (data) {
         this.notifiers = data.notifiers;
         this.path = data.path;
         this.interval = new IntervalData().deserialize(data.interval);
         if (data.then !== undefined) {
             for (var i = 0, count = data.then.length; i < count; i++) {
-                this.subTasks.push(new JobData().deserialize(data.then[i]));
+                this.subTasks.push(new TaskData().deserialize(data.then[i]));
             }
         }
         return this;
     };
-    return JobData;
+    return TaskData;
 })();
-exports.JobData = JobData;
+exports.TaskData = TaskData;
 var ConfigData = (function () {
     function ConfigData() {
         this.notifiers = new Array();
@@ -50,7 +50,7 @@ var ConfigData = (function () {
             this.notifiers.push(new NotifierData().deserialize(data.notifiers[i]));
         }
         for (var i = 0, count = data.jobs.length; i < count; i++) {
-            this.jobs.push(new JobData().deserialize(data.jobs[i]));
+            this.jobs.push(new TaskData().deserialize(data.jobs[i]));
         }
         return this;
     };

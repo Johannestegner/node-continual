@@ -12,13 +12,13 @@ var ContinualTask = (function () {
         for (var i = 0, count = data.notifiers.length; i < count; i++) {
             var notifier = continual.getNotifier(data.notifiers[i]);
             if (!notifier) {
-                yolog.info('Failed to fetch a notifier for job with name: %s. Id did not exist in the notifier list.', this.script.getName());
+                yolog.info('Failed to fetch a notifier (id: %d) for job with name: %s. Id did not exist in the notifier list.', data.notifiers[i], this.script.getName());
             }
             else {
                 this.notifiers.push(notifier);
             }
         }
-        this.interval = new Interval.Interval(data.interval);
+        this.interval = new Interval(data.interval);
     }
     ContinualTask.prototype.runJob = function (done) {
         var self = this;
@@ -71,4 +71,4 @@ var ContinualTask = (function () {
     };
     return ContinualTask;
 })();
-exports.ContinualTask = ContinualTask;
+module.exports = ContinualTask;

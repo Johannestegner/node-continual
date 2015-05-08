@@ -8,4 +8,4 @@ var Interval = (function () {
     };
     return Interval;
 })();
-exports.Interval = Interval;
+module.exports = Interval;

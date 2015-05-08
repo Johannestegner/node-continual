@@ -1,3 +1,8 @@
+// This file contains extensions/polyfills for the Array class.
+// The array class lacks (in ES5) the array.find function, hence its
+// created here if its not already found.
+// I have also created a asyncForEach function and a asyncMap function for 
+// easy access and to not have to include any external dependencies for this.
 var proto = Array.prototype;
 if (proto.find === undefined) {
     proto.find = function find(predicate) {

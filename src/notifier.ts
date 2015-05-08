@@ -2,27 +2,60 @@
 import Data = require('./config-data');
 import Util = require('util');
 
+// Currently the notifier object is mainly a script loader whith a id.
+// It could just as well be a dictionary.
+// But in the future it might be used for other stuff too, so I decided to
+// have it as its own class.
+
 /**
- * The notifier interface, which all notifier scripts should follow.
+ * Notifier interface.
+ * All notifier scripts have to follow this interface.
  */
-export interface INotifier {
+interface INotifier {
+  /**
+   * Get the name of the notifier.
+   * @returns {string} Name.
+   */
   getName(): string;
+  /**
+   * Get the notifier version.
+   * @returns {string} Version.
+   */
   getVersion(): string;
+  /**
+   * Send error message to notifier.
+   * @param {string} error Error message.
+   * @param {function} done Callback to fire on done: function(void) => void.
+   */
   sendError(error: string, done: () => void): void;
+  /**
+   * Send success message to notifier.
+   * @param {string} message Message to pass to notifier.
+   * @param {number} time Time the job took.
+   * @param {function} done Callback to fire on done: function(void) => void.
+   */
   sendSuccess(message: string, time: number, done: () => void): void;
+  /**
+   * Send message to notifier.
+   * @param {string} message Message to send.
+   * @param {function} done Callback to fire on done: function(void) => void.
+   */
   sendMessage(message: string, done: () => void): void;
 }
 
 /**
  * The Notifier object implements the INotifier interface and passes the calls to the script.
  */
-export class ContinualNotifier implements INotifier {
+class ContinualNotifier implements INotifier {
   
   private script: INotifier;
+  // The ID is used as a reference for the jobs so that it can easliy fetch a notifier declared in the data file.
   private id: number;
   
   /**
-   * 
+   * ContinualNotifier constructor.
+   * Creates and initializes a notifier object.
+   * @param {NotifierData} data Data to create the notifier from.
    */
   constructor(data: Data.NotifierData) {
     // Set up path to the actual file
@@ -61,7 +94,7 @@ export class ContinualNotifier implements INotifier {
   /**
    * Send error message to notifier.
    * @param {string} error Error message.
-   * @param {function} done Callback to fire on done.
+   * @param {function} done Callback to fire on done: function(void) => void.
    */
   public sendError(error: string, done: () => void): void {
     this.script.sendError(error, done);
@@ -71,7 +104,7 @@ export class ContinualNotifier implements INotifier {
    * Send success message to notifier.
    * @param {string} message Message to pass to notifier.
    * @param {number} time Time the job took.
-   * @param {function} done Callback to fire on done.
+   * @param {function} done Callback to fire on done: function(void) => void.
    */
   public sendSuccess(message: string, time: number, done: () => void): void {
     this.script.sendSuccess(message, time, done);
@@ -80,10 +113,12 @@ export class ContinualNotifier implements INotifier {
   /**
    * Send message to notifier.
    * @param {string} message Message to send.
-   * @param {function} done Callback to fire on done.
+   * @param {function} done Callback to fire on done: function(void) => void.
    */
   public sendMessage(message: string, done: () => void): void {
     this.script.sendMessage(message, done);
   }
 }
 
+// Export only the notifier class.
+export = ContinualNotifier;

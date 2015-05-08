@@ -1,25 +1,21 @@
-/// <reference path="../typings/node/node.d.ts"/>
-/// <reference path="../typings/node-yolog.d.ts"/>
-/// <reference path="helpers/arrayextend.ts"/>
-/// <reference path="continual"/>
-require('./helpers/arrayextend');
-var logger = require('node-yolog');
-global.yolog = logger;
 var fs = require('fs');
+var logger = require('node-yolog');
+var Continual = require('./continual');
+global.yolog = logger;
 var _dir = '.continual';
 var _configFile = _dir + '/config.json';
-var Continual = require('./continual');
-var getArg = function getArg(command) {
-    return process.argv.find(function (element, index, array) {
-        return element.indexOf('-' + command) !== -1;
+var hasArg = function getArg(command) {
+    var out = process.argv.find(function (element, index, array) {
+        return element.toLowerCase().indexOf('-' + command.key.toLowerCase()) !== -1;
     });
+    return out !== undefined;
 };
-var ArgumentTypes = Continual.ArgumentTypes;
-if (getArg(ArgumentTypes.DEBUG) === undefined) {
+var CommandTypes = Continual.CommandTypes;
+if (!hasArg(CommandTypes.DEBUG)) {
     yolog.set(false, 'debug', 'trace', 'todo');
 }
 yolog.debug('Debug mode is on.');
-if (getArg(ArgumentTypes.INIT) !== undefined) {
+if (hasArg(CommandTypes.INIT)) {
     var _jobsFolder = _dir + '/jobs';
     var _notifierFolder = _dir + '/notifiers';
     yolog.info('Initializing continual in current directory.');
@@ -49,12 +45,13 @@ if (getArg(ArgumentTypes.INIT) !== undefined) {
         }
     });
 }
-else if (getArg(ArgumentTypes.HELP) !== undefined) {
+else if (hasArg(CommandTypes.HELP)) {
     console.log('\nAvailable continual commands & options:\n');
-    console.log('-%s\t%s', ArgumentTypes.INIT, ArgumentTypes.getDescription(ArgumentTypes.INIT));
-    console.log('-%s\t%s', ArgumentTypes.HELP, ArgumentTypes.getDescription(ArgumentTypes.HELP));
-    console.log('-%s\t%s\n', ArgumentTypes.DEBUG, ArgumentTypes.getDescription(ArgumentTypes.DEBUG));
+    console.log('-%s\t%s', CommandTypes.INIT.key, CommandTypes.INIT.value);
+    console.log('-%s\t%s', CommandTypes.HELP.key, CommandTypes.HELP.value);
+    console.log('-%s\t%s\n', CommandTypes.DEBUG.key, CommandTypes.DEBUG.value);
 }
 else {
     var continual = new Continual.Continual(_configFile);
+    continual.start();
 }

@@ -4,16 +4,48 @@ import fs = require('fs');
  * Serializable interface for conversion to and from json.
  */
 interface Serializable<T> {
-  deserialize(input: Object): T;
+  /**
+   * Deserialize a raw json confing object and populate the 
+   * serializable objects fields.
+   * @param {object} data Json data.
+   * @returns {object} this.
+   */
+  deserialize(data: any): T;
+  
+  // Implement serialization of objects to save config on script installation
+  // This is a future feature.
+  // serialize(): string;
 }
 
 /**
- * Config interval as Data.
+ * IntervalData.
+ * Data object containing information about a interval.
  */
 export class IntervalData implements Serializable<IntervalData> {
+  
   unit: string;
-  value: number;  
+  value: number;
+  
+  /**
+   * IntervalData constructor.
+   * Creates a IntervalData object.
+   * A IntervalData object should be deserailized before usage, so that
+   * its fields are populated.
+   * This should be handeled internally by the TaskData object.
+   * @see TaskData
+   * @see deserialize
+   * @see Serializable<T>
+   */
+  constructor() {
+    // Nothing is currently done in the IntervalData constructor.
+  }
 
+  /**
+   * Deserialize a raw json config object (part containing interval data)
+   * and populate the IntervalData fields.
+   * @param {object} data Json data.
+   * @returns {IntervalData} this.
+   */
   deserialize(data: any) {
     this.unit = data.unit;
     this.value = data.value;
@@ -23,12 +55,34 @@ export class IntervalData implements Serializable<IntervalData> {
 }
 
 /**
- * Config notifier as Data.
+ * NotifierData.
+ * Data object containing information about a notifier.
  */
 export class NotifierData implements Serializable<NotifierData> {
+  
   id: number;
   path: string;
   
+  /**
+   * NotifierData constructor.
+   * Creates a NotifierData object.
+   * A NotifierData object should be deserialized before usage, so that
+   * its fields are populated.
+   * This should be handeled internally by the ConfigData object.
+   * @see ConfigData
+   * @see deserialize
+   * @see Serializable<T>
+   */
+  constructor() {
+    // Nothing is currently done int the NotiferData constructor.
+  }
+  
+  /**
+   * Deserialize a raw json config object (part containing notifier data)
+   * and populate the NotifierData fields.
+   * @param {object} data Json data.
+   * @returns {NotifierData} this.
+   */
   deserialize(data: any) {
     this.id = data.id;
     this.path = data.path;
@@ -38,63 +92,98 @@ export class NotifierData implements Serializable<NotifierData> {
 }
 
 /**
- * Config job as Data.
+ * TaskData.
+ * Data object containing information about a task and its sub-tasks.
  */
-export class JobData implements Serializable<JobData> {
+export class TaskData implements Serializable<TaskData> {
+  
   notifiers: Array<number>;
   path: string;
   interval: IntervalData;
-  subTasks: Array<JobData>;
+  subTasks: Array<TaskData>;
   
+  /**
+   * TaskData constructor.
+   * Creates a TaskData object.
+   * A TaskData object should be deserialized before usage, so that
+   * its fields are populated.
+   * This should be handeled internally by the ConfigData object.
+   * @see ConfigData
+   * @see deserialize
+   * @see Serializable<T>
+   */
   constructor() {
-    this.subTasks = new Array<JobData>();
+    this.subTasks = new Array<TaskData>();
     this.notifiers = new Array<number>();
   }
   
+  /**
+   * Deserialize a raw json config object (part contianing task data)
+   * and populate the TaskData fields.
+   * @param {object} data Json data.
+   * @returns {TaskData} this.
+   */
   deserialize(data: any) {
     this.notifiers = data.notifiers;
     this.path = data.path;
     this.interval = new IntervalData().deserialize(data.interval);
-    
+    // Check if any subtasks under the 'then' property.
     if (data.then !== undefined) {
       for (var i = 0, count = data.then.length; i < count; i++) {
-        this.subTasks.push(new JobData().deserialize(data.then[i]));
+        this.subTasks.push(new TaskData().deserialize(data.then[i]));
       }
     }
-
     return this;
   }
 }
 
 /**
- * Config file as Data.
+ * ConfigData.
+ * Contains all information about the configuration for the current continual instance.
+ * Used mainly as a forced converter to structure so that its certain that some properties
+ * exists.
+ * The config data object creates all its sub-objects inside, so no need to do this manually.
  */
 export class ConfigData implements Serializable<ConfigData> {
   
+  notifiers: Array<NotifierData>;
+  jobs: Array<TaskData>;
+  
+  /**
+   * ConfigData constructor.
+   * Creates a config data object.
+   * A configData object should be deserialized before usage, so that
+   * its fields are populated.
+   * @see deserialize
+   * @see Serializable<T>
+   */
   constructor() {
     this.notifiers = new Array<NotifierData>();
-    this.jobs = new Array<JobData>();
+    this.jobs = new Array<TaskData>();
   }
   
+  /**
+   * Deserialize a raw json config object and populate the ConfigData fileds.
+   * @param {object} data Json data.
+   * @returns {ConfigData} this.
+   */
   deserialize(data: any) {
+    // Create all notifiers.
     for (var i = 0, count = data.notifiers.length; i < count; i++) {
       this.notifiers.push(new NotifierData().deserialize(data.notifiers[i]));
     }
-
+    // Create all tasks.
     for (var i = 0, count = data.jobs.length; i < count; i++) {
-      this.jobs.push(new JobData().deserialize(data.jobs[i]));
+      this.jobs.push(new TaskData().deserialize(data.jobs[i]));
     }
-    
     return this;
   }
-
-  notifiers: Array<NotifierData>;
-  jobs: Array<JobData>;
-  
 }
 
 /**
  * Import config.
+ * @param {string} filePath Path to the configuration file.
+ * @returns {ConfigData} A loaded configuration object.
  */
 export function importConfig(filePath: string) {
   var data = fs.readFileSync(filePath, 'UTF8');

@@ -25,4 +25,4 @@ var ContinualNotifier = (function () {
     };
     return ContinualNotifier;
 })();
-exports.ContinualNotifier = ContinualNotifier;
+module.exports = ContinualNotifier;
