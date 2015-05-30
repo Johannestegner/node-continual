@@ -88,6 +88,35 @@ Thats it, your job will now run every 5 minutes!
 But... Without a notifier it won't let you know that its done!  
 So next we try install a notifier.
 
+###### Chaining jobs
+A job can depend on another job, this is done by adding a list of jobs under the "then" key in the job config:  
+  
+```json
+{
+    "notifiers": [],
+    "jobs": [
+      { 
+        "path": "Jobs/superawesomejob.js",
+        "interval": {
+            "value": 5,
+            "unit": "m"
+        },
+        "then": [
+          {
+            "path": "Jobs/job2.js",
+            "interval": {
+              "value": 3,
+              "unit": "s"
+            }
+          }
+        ]
+      }
+    ]
+}
+```
+In the above example, the `superawesomejob` script will run, when its done, continual will, after 3 seconds, run the `job2` script.  
+Multiple jobs can be added as dependencies, they run async, and can be chained in any depth.  
+
 ##### Installation of Notifiers.
 
 Find a notifier (can test one of the example ones if you wish).  
@@ -123,10 +152,8 @@ Info    (20:39:56): Continual loaded and ready. Starting jobs.
 Info    (20:39:56): All jobs started.
 ```
 
-## Make your own damn jobs!
-Okay, that was uncalled for.  
-But I would really recommend writing your own, its super simple, and its a bit more customisable than using my example scripts...  
-So how to do it?  
+## Making your own scripts.
+Creating your own jobs and notifiers is simple.  
   
 For description on how to implement a job, check out the following [Wiki](https://github.com/Johannestegner/node-continual/wiki/Create-Jobs) entry.  
 For description on how to implement a notifier, check out the following [Wiki](https://github.com/Johannestegner/node-continual/wiki/Create-Notifier) entry.
