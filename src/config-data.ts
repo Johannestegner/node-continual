@@ -1,6 +1,11 @@
 import fs = require('fs');
 import ISerializable = require('./interfaces/serializable');
 
+export enum EIntervalType {
+  In,
+  At
+}
+
 /**
  * IntervalData.
  * Data object containing information about a interval.
@@ -8,7 +13,10 @@ import ISerializable = require('./interfaces/serializable');
 export class IntervalData implements ISerializable<IntervalData> {
   
   unit: string;
-  value: number;
+  in: number;
+  at: Array<string>;
+  once: boolean;
+  type: EIntervalType;
   
   /**
    * IntervalData constructor.
@@ -31,9 +39,15 @@ export class IntervalData implements ISerializable<IntervalData> {
    * @returns {IntervalData} this.
    */
   deserialize(data: any) {
-    this.unit = data.unit;
-    this.value = data.value;
-
+    var strType: string = data.type;
+    this.type = EIntervalType[strType.toLowerCase()];
+    if (this.type === EIntervalType.In) {
+      this.in = data.in;
+      this.unit = data.unit;
+    } else if (this.type === EIntervalType.At) {
+      this.at = data.at;
+    }
+    this.once = data.once;
     return this;
   }
 }
