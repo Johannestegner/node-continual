@@ -7,6 +7,11 @@ import Util = require('util');
 import Interval = require('./interval');
 import Continual = require('./continual');
 import ITask = require('./interfaces/task');
+import IOccurrence = require('./interfaces/occurrence');
+import OccurrenceAt = require('./occurrences/at');
+import OccurrenceIn = require('./occurrences/in');
+
+
 
 /**
  * The Task class implements the ITask and passes the calls to the script.
@@ -15,7 +20,7 @@ class ContinualTask implements ITask {
   
   private subTasks: Array<ContinualTask>;
   private notifiers: Array<Notifier>;
-  private interval: Interval;  
+  private occurrence: IOccurrence;  
   private script: ITask;
   private parent: ContinualTask = null;
   
@@ -50,8 +55,13 @@ class ContinualTask implements ITask {
         this.notifiers.push(notifier);
       }
     }
-    // Create the interval object.
-    this.interval = new Interval(data.interval);
+
+    // Create the occurrence object.
+    if (data.interval.type === Data.EIntervalType.At) {
+      this.occurrence = new OccurrenceAt(data.interval);
+    } else if (data.interval.type === Data.EIntervalType.In) {
+      this.occurrence = new OccurrenceIn(data.interval);
+    }
   }
   
   /**
@@ -94,11 +104,12 @@ class ContinualTask implements ITask {
    * @param {function} Callback to fire when done (or undefined): function(void) => void;
    */
   public run(callback: () => void) {
+    var next = this.occurrence.getNext();
     yolog.info(
       'Running the task "%s"%s in %d seconds.',
       this.getName(),
       (this.parent !== null ? ' (Sub-task of "' + this.parent.getName() + '")' : ''),
-      (this.interval.getNext() / 1000)
+      (next / 1000)
     );
     var self = this;
     
@@ -107,10 +118,13 @@ class ContinualTask implements ITask {
         if (callback) {
           callback();
         } else {
-          self.run(undefined); // call itself, so that the timer restarts.
+          if (!self.occurrence.isOnce) {
+            // call itself, so that the timer restarts
+            self.run(undefined);
+          }
         }
       });
-    }, this.interval.getNext());
+    }, next);
   }
   
    /**

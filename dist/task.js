@@ -1,8 +1,10 @@
 /// <reference path="../typings/node/node.d.ts"/>
 /// <reference path="../typings/node-yolog.d.ts"/>
 var yolog = require('node-yolog');
+var Data = require('./config-data');
 var Util = require('util');
-var Interval = require('./interval');
+var OccurrenceAt = require('./occurrences/at');
+var OccurrenceIn = require('./occurrences/in');
 /**
  * The Task class implements the ITask and passes the calls to the script.
  */
@@ -38,8 +40,13 @@ var ContinualTask = (function () {
                 this.notifiers.push(notifier);
             }
         }
-        // Create the interval object.
-        this.interval = new Interval(data.interval);
+        // Create the occurrence object.
+        if (data.interval.type === 1 /* At */) {
+            this.occurrence = new OccurrenceAt(data.interval);
+        }
+        else if (data.interval.type === 0 /* In */) {
+            this.occurrence = new OccurrenceIn(data.interval);
+        }
     }
     /**
      * Run the job.
@@ -85,7 +92,8 @@ var ContinualTask = (function () {
      * @param {function} Callback to fire when done (or undefined): function(void) => void;
      */
     ContinualTask.prototype.run = function (callback) {
-        yolog.info('Running the task "%s"%s in %d seconds.', this.getName(), (this.parent !== null ? ' (Sub-task of "' + this.parent.getName() + '")' : ''), (this.interval.getNext() / 1000));
+        var next = this.occurrence.getNext();
+        yolog.info('Running the task "%s"%s in %d seconds.', this.getName(), (this.parent !== null ? ' (Sub-task of "' + this.parent.getName() + '")' : ''), (next / 1000));
         var self = this;
         setTimeout(function () {
             self.runJob(function () {
@@ -93,10 +101,13 @@ var ContinualTask = (function () {
                     callback();
                 }
                 else {
-                    self.run(undefined); // call itself, so that the timer restarts.
+                    if (!self.occurrence.isOnce) {
+                        // call itself, so that the timer restarts
+                        self.run(undefined);
+                    }
                 }
             });
-        }, this.interval.getNext());
+        }, next);
     };
     /**
     * Get name of the job.
