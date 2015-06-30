@@ -1,162 +1,196 @@
 # Continual
 ###  Run tasks on interval.
-
-Simple task runner written in node js.  
   
   
 ## Installation  
-Continual is preffered to be installed globally.  
+Continual is supposed to be installed globally.  
 ```
-[Installation command here whenever package is published]
+npm install -g continual
 ```
   
   
 ## Usage
 Continual needs to be intiailized in the directory where its job will be run from.  
-You could of course run jobs from anywhere, and let them do whatever they want, so its not in any type of "jail".  
-Initialization is easy, just point your terminal to the directory where you want it to run and summon it with the following magic words:
+You could of course run jobs from anywhere, and let them do whatever they want, its not jailed in the folder where its inited.  
+Initialization is easy, just point your terminal to the directory where you want it to run and type:
 
 ```
-> continual -init
+continual -init
 ```
 
 This will initialize continual in the folder.  
-And by initialize, I mean, create some folders and a config file under '.continual'.  
+When continual intializes, it creates a `.continual` folder, with a few sub folders and a `config.json` file.  
 If you are not working alone, and your co-workers are not using continual, you might want to put that folder in the ignore file!  
   
-When continual is intialized, it will allow you to run the 'start command', which is even easier!
+When continual is intialized, it will allow you to start by typing:
 
 ```
-> continual
+continual
 ```
 
-Yay, it starts!  
-But... we have a small issue here. No jobs nor notifiers are installed..!  
-Sooo... how to install a job or a notifier?
-
-##### Installation of Jobs.
-
-First off, we need to find a job for continual to do (you can test one of mine, examples are in the example folder).  
-As of now, there is no super cool command to install a job, but be sure that I am working on it!  
-So for now, you will have to browse to the folder that continual just created (`.continual`) inside this folder we have a `config.json` file and two folders:  
-`Notifiers` and `Jobs`.  
-
-Place your Jobs in the `Jobs` folder (waaat?!).  
-Then open the `config.json` file.  
-  
-A fresh config file should look something like:  
+##### Installation of Tasks.
+Installing a task is done by editing the `config.json` file.  
+A newly initialized config file should look something like the following:  
 
 ```json
 {
     "notifiers": [],
-    "jobs": []
+    "tasks": []
 }
 ```
 
-In the `jobs` array, we want to create a new json object for the job.  
-Each job requires two properties: `path` and `interval`.  
-The path is the path to the job script and is relative to the .continual folder.  
-And the interval property specifies how often to run the job.  
-The interval object takes two key value pairs: `value` which is a number, and `unit` which have to be one of the following:  
+In this file, no tasks nor notifiers are added by default.  
+A task is a JavaScript file wich implements a given interface.  
+For a detailed description on how to create a tasks, check out the following [Wiki](https://github.com/Johannestegner/node-continual/wiki/Create-Tasks) entry.  
+
+When you got a task, it should be placed in the `.continual/tasks` folder (this is optional, a task can be placed anywhere, but its easier to have it in the installation, especially if adding it to sourcecontroll etc).  
+After the file has been placed in the tasks folder, the config have to be edited.  
   
-* 'd' : Days - (1 day - 24h)
+In the `tasks` property in the config file, each task is added.  
+
+A task requires a `path`, a set of `notifiers` and a `interval` object.  
+  
+The `path` is the path to the task script, relative to the .continual folder.  
+The interval is a object which specifies how often or at which occurrences the task should be ran.  
+  
+There is two type of intervals/occurrences; `at` and `in`. The `at` occurrence defines a timestamp on which the task should be ran, and the `in` simply means "in how long".  
+See [in](#in), [at](#at) and [once](#once) for description on how the different interval types works.  
+  
+The notifiers is an array with numbers, the numbers references a notifier ID (which is further explained in the [notifiers](#notifiers) part of the readme.  
+  
+When a task is added, the config should look something like:  
+
+```json
+{
+    "notifiers": [],
+    "tasks": [
+      {
+        "path": "path/to/task.js",
+        "notifiers": [],
+        "interval": {
+          "at": [
+            "*:*:*"
+          ]
+        }
+      }
+    ]
+}
+```
+  
+###### In
+The `in` type has two properties: `unit` and `value`.  
+Available units are the following:  
+  
+* 'd' : Days - (24h)
 * 'h' : Hours
 * 'm' : Minutes
 * 's' : Seconds
 * 'ms' : Milliseconds
+
+And the `value` specifies how many of a given unit.  
+Example:
+
+```
+"interval": {
+  "unit": "s",
+  "value": 10
+}
+// every 10 seconds.
+```
+
+###### at  
+The `at` type has a single property... `at`, which is an array of strings.  
+Each string specifies a time at which the job should be fired in a `h:m:s` format where the hour entry is in 24h format.  
+Its possible to use the `*` character instead of a hour, minute or second.  
+
+Observe: if a job takes a long time to run, it might skip entries, so if its vital to be ran at a given point, create more than one task for it.
+
+Example:
+
+```
+"interval": {
+  "at": [
+    "10:25:1",
+    "*:*:20"
+  ]
+}
+// every day at 10:25:1, AND every 20th second of every minute.
+```
+
+###### once
+If a task is only supposed to be ran once, the `once` property can be added to the interval object.  
+The `once` property need to be set to `true` if its supposed to run once, else it will default to false and keep on ticking.   
+
+
+##### Chaining Tasks
+An important part of continual is the ability to chain tasks.  
+This means that when a given task is done, another can be invoked by continual automatically.  
+This is done by adding the `then` property to a given task; `then` is an array which in turn contains tasks, as many as wanted.  
+When the parent task is finnished, it will invoke all its subtasks async, so all the tasks will run as soon as they can.  
+Each subtask can in turn have its own subtasks, and so on.  
   
-To add a script that currently dwells in the `jobs` folder, make your file look something like:  
+Observe: the parent task will not reset until all subtasks are done.
+
+Example:  
+
+```json
+"tasks": [
+  { 
+    "path": "tasks/task.js",
+    "interval": {
+        "value": 5,
+        "unit": "m"
+    },
+    "then": [
+      {
+        "path": "tasks/subtask.js",
+        "interval": {
+          "value": 3,
+          "unit": "s"
+        }
+      }
+    ]
+  }
+]
+// In this case, the 'task.js' task will be fired after 5 minutes. When its done, 3 seconds will pass, then the subtask will fire.
+```
+
+
+##### Installation of Notifiers.
+Notifiers is a small JavaScript that will get called on whenever a task is done or failed.  
+For a detailed description on how to create a notifier, check out the following [Wiki](https://github.com/Johannestegner/node-continual/wiki/Create-Notifier) entry.  
+  
+To add a new notifier, start by putting the notifier script in the `.continual/notifiers` folder (just as with tasks, this is not forced).  
+Each notifier entry has two properties, `id` and `path`.  
+The `path` is the path to the script, and the `id` is a unique number which is later referenced in the tasks.  
+  
+When a notifier have been added, the config should look something like:  
   
 ```json
 {
-    "notifiers": [],
-    "jobs": [
-      { 
-        "path": "Jobs/superawesomejob.js",
+    "notifiers": [
+      {
+        "id": 0,
+        "path": "path/to/notifier.js"
+      }
+    ],
+    "tasks": [
+      {
+        "path": "path/to/task.js",
+        "notifiers": [],
         "interval": {
-            "value": 5,
-            "unit": "m"
+          "at": [
+            "*:*:*"
+          ]
         }
       }
     ]
 }
 ```
 
-Thats it, your job will now run every 5 minutes!  
+For a task to use the notifier, add the notifier id to the `notifiers` property in the task object.
 
-  
-But... Without a notifier it won't let you know that its done!  
-So next we try install a notifier.
-
-###### Chaining jobs
-A job can depend on another job, this is done by adding a list of jobs under the "then" key in the job config:  
-  
-```json
-{
-    "notifiers": [],
-    "jobs": [
-      { 
-        "path": "Jobs/superawesomejob.js",
-        "interval": {
-            "value": 5,
-            "unit": "m"
-        },
-        "then": [
-          {
-            "path": "Jobs/job2.js",
-            "interval": {
-              "value": 3,
-              "unit": "s"
-            }
-          }
-        ]
-      }
-    ]
-}
-```
-In the above example, the `superawesomejob` script will run, when its done, continual will, after 3 seconds, run the `job2` script.  
-Multiple jobs can be added as dependencies, they run async, and can be chained in any depth.  
-
-##### Installation of Notifiers.
-
-Find a notifier (can test one of the example ones if you wish).  
-As with jobs, there is currently no command to install notifiers, so for now, browse to the `.continual` folder.  
-Open the `Notifiers` folder and place you notifier script there.  
-Return to the `config.json` file.  
-Now, instead of editing the `jobs` list, we want to edit the `notifiers` list.  
-  
-Notifiers is only a string, a path to the script. Nothing more, so when a script is added, the config should look something like:  
-  
-```json
-{
-    "notifiers": [
-      "Notifiers/superawesomenotifier.js"
-    ],
-    "jobs": [
-      { 
-        "path": "Jobs/superawesomejob.js",
-        "interval": 5
-      }
-    ]
-}
-```
-
-Then start continual again, and it should load the notifier.  
-  
-The start up text should look something like...
-
-```
-Info    (20:39:56): Loaded notifier: superawesomenotifier (1.0.0.0)
-Info    (20:39:56): Loaded job: superawesomejob (1.0.0.0) - Interval: 5
-Info    (20:39:56): Continual loaded and ready. Starting jobs.
-Info    (20:39:56): All jobs started.
-```
-
-## Making your own scripts.
-Creating your own jobs and notifiers is simple.  
-  
-For description on how to implement a job, check out the following [Wiki](https://github.com/Johannestegner/node-continual/wiki/Create-Jobs) entry.  
-For description on how to implement a notifier, check out the following [Wiki](https://github.com/Johannestegner/node-continual/wiki/Create-Notifier) entry.
+----
 
 ## Planned and in dev.
 
@@ -172,7 +206,7 @@ write it yourself and create a pull request!
 ```
 The MIT License (MIT)
 
-Copyright (c) 2015 Johannes Tegnér
+Copyright (c) 2015 Johannes Tegnï¿½r
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
