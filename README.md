@@ -10,8 +10,8 @@ npm install -g continual
   
   
 ## Usage
-Continual needs to be intiailized in the directory where its supposed to run.  
-You could of course run jobs from anywhere, and let them do whatever they want, its not jailed in the folder where its inited.  
+Continual needs to be initialized in the directory where its supposed to run.  
+You could of course run jobs from anywhere, and let them do whatever they want, its not jailed in the folder where its initialized.  
 Initialization is easy, just point your terminal to the directory where you want it to run and type:
 
 ```
@@ -19,10 +19,10 @@ continual -init
 ```
 
 This will initialize continual in the folder.  
-When continual intializes, it creates a `.continual` folder, with a few sub folders and a `config.json` file.  
+When continual initializes, it creates a `.continual` folder, with a few sub folders and a `config.json` file.  
 If you are not working alone, and your co-workers are not using continual, you might want to put that folder in the ignore file!  
   
-When continual is intialized, it will allow you to start by typing:
+When continual is initialized, it will allow you to start by typing:
 
 ```
 continual
@@ -40,10 +40,10 @@ A newly initialized config file should look something like the following:
 ```
 
 In this file, no tasks nor notifiers are added by default.  
-A task is a JavaScript file wich implements a given interface.  
+A task is a JavaScript file which implements a given interface.  
 For a detailed description on how to create a tasks, check out the following [Wiki](https://github.com/Johannestegner/node-continual/wiki/Create-Tasks) entry.  
 
-When you got a task, it should be placed in the `.continual/tasks` folder (this is optional, a task can be placed anywhere, but its easier to have it in the installation, especially if adding it to sourcecontroll etc).  
+When you got a task, it should be placed in the `.continual/tasks` folder (this is optional, a task can be placed anywhere, but its easier to have it in the installation, especially if adding it to source-control etc).  
 After the file has been placed in the tasks folder, the config have to be edited.  
   
 In the `tasks` property in the config file, each task is added.  
@@ -126,7 +126,7 @@ The `once` property need to be set to `true` if its supposed to run once, else i
 An important part of continual is the ability to chain tasks.  
 This means that when a given task is done, another can be invoked by continual automatically.  
 This is done by adding the `then` property to a given task; `then` is an array which in turn contains tasks, as many as wanted.  
-When the parent task is finnished, it will invoke all its subtasks async, so all the tasks will run as soon as they can.  
+When the parent task is finished, it will invoke all its subtasks async, so all the tasks will run as soon as they can.  
 Each subtask can in turn have its own subtasks, and so on.  
   
 Observe: the parent task will not reset until all subtasks are done.
