@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "noImplicitAny": false,
+        "removeComments": true,
+        "preserveConstEnums": true,
+
+        "sourceMap": false,
+        "outDir": "../dist/",
+        "declaration": false
+    },    
+    "filesGlob": [
+        "src/index.ts",
+        "tests/*"
+    ]
+}
