@@ -1,17 +1,13 @@
 /// <reference path='../../typings/tests/tests.d.ts' />
 
 // Libs for testing.
-import Mocha = require('mocha');
 import Chai = require('chai');
 import Sinon = require('sinon');
 
 import Data = require('../../src/config-data');
 import OccurrenceAt = require('../../src/occurrences/at');
 
-
-var Expect = Chai.expect;
 var Assert = Chai.assert;
-var sandbox: Sinon.SinonSandbox = null;
 var clock: Sinon.SinonFakeTimers = null;
 
 describe('Test class OccurrenceAt', function () {
@@ -25,7 +21,6 @@ describe('Test class OccurrenceAt', function () {
   afterEach(function () {
     clock.restore();
   });
-
 
   describe('Test isOnce()', function() {
     

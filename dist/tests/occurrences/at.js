@@ -3,9 +3,7 @@ var Chai = require('chai');
 var Sinon = require('sinon');
 var Data = require('../../src/config-data');
 var OccurrenceAt = require('../../src/occurrences/at');
-var Expect = Chai.expect;
 var Assert = Chai.assert;
-var sandbox = null;
 var clock = null;
 describe('Test class OccurrenceAt', function () {
     beforeEach(function () {

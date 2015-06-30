@@ -40,11 +40,20 @@ if (proto.asyncForEach === undefined) {
 if (proto.asyncMap === undefined) {
     proto.asyncMap = function (callback, done) {
         var result = new Array();
-        this.asyncForEach(function (object, next) {
-            result.push(object);
-            next();
-        }, function () {
-            done(result);
-        });
+        var list = Object(this);
+        var len = list.length >>> 0;
+        var completed = 0;
+        if (len === 0) {
+            return done([]);
+        }
+        for (var i = 0; i < len; i++) {
+            callback(list[i], function (obj) {
+                result[i] = obj;
+                completed++;
+                if (completed === len) {
+                    return done(result);
+                }
+            }.bind(i));
+        }
     };
 }

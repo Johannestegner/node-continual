@@ -68,12 +68,25 @@ if (proto.asyncMap === undefined) {
    * @param {function} done Callback to fire on done: function(list) - Where list is an array of the resulting objects.
    */
   proto.asyncMap = function(callback: eachDelegate<any>, done: (result: any[]) => void): void {
-    var result = new Array();    
-    this.asyncForEach(function(object: any, next: () => void) {
-      result.push(object);
-      next();
-    }, function(): void {
-        done(result);
-      });
+    var result = new Array();
+    var list = Object(this);
+    var len = list.length >>> 0;
+    var completed = 0;
+    
+    if (len === 0) {
+      return done([]);
+    }
+    
+    for (var i: number = 0; i < len; i++) {
+      callback(list[i], function(obj) {
+        result[i] = obj;
+        completed++;
+        if (completed === len) {
+          return done(result);
+        }
+      }.bind(i));
+    }
   };
+  
+  
 }
