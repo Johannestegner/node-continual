@@ -148,7 +148,7 @@ export class TaskData implements ISerializable<TaskData> {
 export class ConfigData implements ISerializable<ConfigData> {
   
   notifiers: Array<NotifierData>;
-  jobs: Array<TaskData>;
+  tasks: Array<TaskData>;
   
   /**
    * ConfigData constructor.
@@ -160,7 +160,7 @@ export class ConfigData implements ISerializable<ConfigData> {
    */
   constructor() {
     this.notifiers = new Array<NotifierData>();
-    this.jobs = new Array<TaskData>();
+    this.tasks = new Array<TaskData>();
   }
   
   /**
@@ -174,8 +174,8 @@ export class ConfigData implements ISerializable<ConfigData> {
       this.notifiers.push(new NotifierData().deserialize(data.notifiers[i]));
     }
     // Create all tasks.
-    for (var i = 0, count = data.jobs.length; i < count; i++) {
-      this.jobs.push(new TaskData().deserialize(data.jobs[i]));
+    for (var i = 0, count = data.tasks.length; i < count; i++) {
+      this.tasks.push(new TaskData().deserialize(data.tasks[i]));
     }
     return this;
   }

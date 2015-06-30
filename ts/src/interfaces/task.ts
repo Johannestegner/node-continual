@@ -1,25 +1,25 @@
 /**
  * Task interface.
- * All Job scripts needs to implement this interface.
+ * All task scripts needs to implement this interface.
  */
 interface ITask {
   /**
-   * Run the job.
-   * @param {function} Callback on job done: function(error: string, message: string, time: number) => void.
+   * Run the task.
+   * @param {function} Callback on task done: function(error: string, message: string, time: number) => void.
    */
-  runJob(done: (error: string, message: string, time: number) => void): void;  
+  runTask(done: (error: string, message: string, time: number) => void): void;  
   /**
-   * Get name of the job.
+   * Get name of the task.
    * @returns {string} Name.
    */
   getName(): string;
   /**
-   * Get job Version.
+   * Get task Version.
    * @returns {string} Version.
    */
   getVersion(): string;
   /**
-   * Get job Description.
+   * Get task Description.
    * @returns {string} Description.
    */
   getDescription(): string;

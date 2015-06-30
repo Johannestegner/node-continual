@@ -9,7 +9,7 @@ import INotifier = require('./interfaces/notifier');
 class ContinualNotifier implements INotifier {
   
   private script: INotifier;
-  // The ID is used as a reference for the jobs so that it can easliy fetch a notifier declared in the data file.
+  // The ID is used as a reference for the tasks so that it can easliy fetch a notifier declared in the data file.
   private id: number;
   
   /**
@@ -28,7 +28,7 @@ class ContinualNotifier implements INotifier {
     /**
    * Get the ID of the notifier.
    * The ID is app specific, and set in the settings file.
-   * Later used in the Jobs to fetch the correct notifier from the continual object.
+   * Later used in the tasks to fetch the correct notifier from the continual object.
    * @returns {string} Id.
    */
   public getId(): number {
@@ -63,7 +63,7 @@ class ContinualNotifier implements INotifier {
   /**
    * Send success message to notifier.
    * @param {string} message Message to pass to notifier.
-   * @param {number} time Time the job took.
+   * @param {number} time Time the task took.
    * @param {function} done Callback to fire on done: function(void) => void.
    */
   public sendSuccess(message: string, time: number, done: () => void): void {

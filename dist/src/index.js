@@ -19,7 +19,7 @@ if (!hasArg(CommandTypes.DEBUG)) {
 }
 yolog.debug('Debug mode is on.');
 if (hasArg(CommandTypes.INIT)) {
-    var _jobsFolder = _dir + '/jobs';
+    var _tasksFolder = _dir + '/tasks';
     var _notifierFolder = _dir + '/notifiers';
     yolog.info('Initializing continual in current directory.');
     fs.exists(_dir, function (exists) {
@@ -34,14 +34,14 @@ if (hasArg(CommandTypes.INIT)) {
                 else {
                     var continual = {
                         "notifiers": [],
-                        "jobs": []
+                        "tasks": []
                     };
                     fs.writeFile(_configFile, JSON.stringify(continual, null, '  '), 'UTF8', function (error) {
                         if (error !== null) {
                             yolog.error('Failed to create the config file.');
                         }
                     });
-                    fs.mkdir(_jobsFolder);
+                    fs.mkdir(_tasksFolder);
                     fs.mkdir(_notifierFolder);
                 }
             });

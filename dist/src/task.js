@@ -33,10 +33,10 @@ var ContinualTask = (function () {
             this.occurrence = new OccurrenceIn(data.interval);
         }
     }
-    ContinualTask.prototype.runJob = function (done) {
+    ContinualTask.prototype.runTask = function (done) {
         var self = this;
-        yolog.debug('Run job invoked.');
-        this.script.runJob(function (error, message, time) {
+        yolog.debug('Run task invoked.');
+        this.script.runTask(function (error, message, time) {
             self.notifiers.asyncForEach(function (notifier, next) {
                 yolog.debug('Sending result to notifier named %s', notifier.getName());
                 if (error) {
@@ -46,7 +46,7 @@ var ContinualTask = (function () {
                     notifier.sendSuccess(message, time, function () { next(); });
                 }
             }, function () {
-                yolog.debug('All notifiers notifierd for the job %s', self.getName());
+                yolog.debug('All notifiers notifierd for the task %s', self.getName());
                 yolog.debug('Calling sub-tasks.');
                 self.subTasks.asyncForEach(function (task, next) {
                     task.run(function () {
@@ -67,7 +67,7 @@ var ContinualTask = (function () {
         yolog.info('Running the task "%s"%s in %d seconds.', this.getName(), (this.parent !== null ? ' (Sub-task of "' + this.parent.getName() + '")' : ''), (next / 1000));
         var self = this;
         setTimeout(function () {
-            self.runJob(function () {
+            self.runTask(function () {
                 if (callback) {
                     callback();
                 }

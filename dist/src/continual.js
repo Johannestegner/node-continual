@@ -7,7 +7,7 @@ var Task = require('./task');
 var Continual = (function () {
     function Continual(configFile) {
         var data = Data.importConfig(configFile);
-        yolog.info("Config loaded successfully. Setting up jobs and notifiers.");
+        yolog.info("Config loaded successfully. Setting up tasks and notifiers.");
         this.notifiers = new Array();
         for (var i = 0, count = data.notifiers.length; i < count; i++) {
             var notifier = new Notifier(data.notifiers[i]);
@@ -16,12 +16,12 @@ var Continual = (function () {
         }
         yolog.info('Initialized %d notifiers.', this.notifiers.length);
         this.tasks = new Array();
-        for (var i = 0, count = data.jobs.length; i < count; i++) {
-            var task = new Task(data.jobs[i], this);
+        for (var i = 0, count = data.tasks.length; i < count; i++) {
+            var task = new Task(data.tasks[i], this);
             this.tasks.push(task);
             yolog.info('Loaded Task "%s" - v%s. (total of %d sub-tasks).', task.getName(), task.getVersion(), task.getSubtaskCount());
         }
-        yolog.info('Intialized %d Jobs/Tasks.', this.tasks.length);
+        yolog.info('Intialized %d Tasks.', this.tasks.length);
     }
     Continual.prototype.getNotifier = function (id) {
         return this.notifiers.find(function (item, index, list) {

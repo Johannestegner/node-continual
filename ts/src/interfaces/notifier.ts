@@ -22,7 +22,7 @@ interface INotifier {
   /**
    * Send success message to notifier.
    * @param {string} message Message to pass to notifier.
-   * @param {number} time Time the job took.
+   * @param {number} time Time the task took.
    * @param {function} done Callback to fire on done: function(void) => void.
    */
   sendSuccess(message: string, time: number, done: () => void): void;

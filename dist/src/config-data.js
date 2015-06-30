@@ -59,14 +59,14 @@ exports.TaskData = TaskData;
 var ConfigData = (function () {
     function ConfigData() {
         this.notifiers = new Array();
-        this.jobs = new Array();
+        this.tasks = new Array();
     }
     ConfigData.prototype.deserialize = function (data) {
         for (var i = 0, count = data.notifiers.length; i < count; i++) {
             this.notifiers.push(new NotifierData().deserialize(data.notifiers[i]));
         }
-        for (var i = 0, count = data.jobs.length; i < count; i++) {
-            this.jobs.push(new TaskData().deserialize(data.jobs[i]));
+        for (var i = 0, count = data.tasks.length; i < count; i++) {
+            this.tasks.push(new TaskData().deserialize(data.tasks[i]));
         }
         return this;
     };

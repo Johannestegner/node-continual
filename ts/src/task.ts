@@ -24,7 +24,7 @@ class ContinualTask implements ITask {
   /**
    * ContinualTask constructor.
    * Creates and initializes a continual task.
-   * @param {JobData} data Data to set up the task with.
+   * @param {taskData} data Data to set up the task with.
    * @param {Continual} continual Continual main object.
    */
   constructor(data: Data.TaskData, continual: Continual) {    
@@ -48,7 +48,7 @@ class ContinualTask implements ITask {
       if (!notifier) {
         yolog.info('Failed to fetch a notifier (id: %d) for task with name: %s. Id did not exist in the notifier list.', data.notifiers[i], this.script.getName());
       } else {
-        // If it exists, add it to the jobs notifiers.
+        // If it exists, add it to the tasks notifiers.
         this.notifiers.push(notifier);
       }
     }
@@ -62,14 +62,14 @@ class ContinualTask implements ITask {
   }
 
   /**
-   * Run the job.
-   * @param {function} Callback on job done: function(void) => void;
+   * Run the task.
+   * @param {function} Callback on task done: function(void) => void;
    */
-  public runJob(done: () => void): void {
-    // Run the main job script.
+  public runTask(done: () => void): void {
+    // Run the main task script.
     var self = this;
-    yolog.debug('Run job invoked.');
-    this.script.runJob(function(error: string, message: string, time: number) {
+    yolog.debug('Run task invoked.');
+    this.script.runTask(function(error: string, message: string, time: number) {
       // The primary script is done, report to the notifiers.
       self.notifiers.asyncForEach(function(notifier: Notifier, next: () => void): void {
         yolog.debug('Sending result to notifier named %s', notifier.getName());
@@ -79,7 +79,7 @@ class ContinualTask implements ITask {
           notifier.sendSuccess(message, time, function() { next(); });
         }
       }, function() {
-        yolog.debug('All notifiers notifierd for the job %s', self.getName());
+        yolog.debug('All notifiers notifierd for the task %s', self.getName());
         yolog.debug('Calling sub-tasks.');
         self.subTasks.asyncForEach(function(task: ContinualTask, next: () => void): void {
           task.run(function() {
@@ -97,7 +97,7 @@ class ContinualTask implements ITask {
   }
 
   /**
-   * Start the job loop.
+   * Start the task loop.
    * @param {function} Callback to fire when done (or undefined): function(void) => void;
    */
   public run(callback: () => void) {
@@ -111,7 +111,7 @@ class ContinualTask implements ITask {
     var self = this;
 
     setTimeout(function() {
-      self.runJob(function () {
+      self.runTask(function () {
         if (callback) {
           callback();
         } else {
@@ -125,7 +125,7 @@ class ContinualTask implements ITask {
   }
 
    /**
-   * Get name of the job.
+   * Get name of the task.
    * @returns {string} Name.
    */
   public getName(): string {
@@ -133,7 +133,7 @@ class ContinualTask implements ITask {
   }
 
   /**
-   * Get job Version.
+   * Get task Version.
    * @returns {string} Version.
    */
   public getVersion(): string {
@@ -141,7 +141,7 @@ class ContinualTask implements ITask {
   }
 
   /**
-   * Get job Description.
+   * Get task Description.
    * @returns {string} Description.
    */
   public getDescription(): string {

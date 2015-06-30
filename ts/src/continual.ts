@@ -34,7 +34,7 @@ class Continual {
   constructor(configFile: string) {
     var data = Data.importConfig(configFile);
     
-    yolog.info("Config loaded successfully. Setting up jobs and notifiers.");
+    yolog.info("Config loaded successfully. Setting up tasks and notifiers.");
     
     // Import all the notifiers.
     // Each notifier is a seperate module, but they all follow a given notifier interface.
@@ -49,17 +49,17 @@ class Continual {
     }
     yolog.info('Initialized %d notifiers.', this.notifiers.length);
     
-    // Import all the jobs.
-    // Just like with notifiers, the jobs are containers for the real job scripts.
-    // Each job (or task as they are called in code), is its own object, with sub-tasks as objects too.
+    // Import all the tasks.
+    // Just like with notifiers, the tasks are containers for the real task scripts.
+    // Each task (or task as they are called in code), is its own object, with sub-tasks as objects too.
     this.tasks = new Array<Task>();
     
-    for (var i = 0, count = data.jobs.length; i < count; i++) {
-      var task = new Task(data.jobs[i], this);
+    for (var i = 0, count = data.tasks.length; i < count; i++) {
+      var task = new Task(data.tasks[i], this);
       this.tasks.push(task);
       yolog.info('Loaded Task "%s" - v%s. (total of %d sub-tasks).', task.getName(), task.getVersion(), task.getSubtaskCount());
     }
-    yolog.info('Intialized %d Jobs/Tasks.', this.tasks.length);
+    yolog.info('Intialized %d Tasks.', this.tasks.length);
   }
   
   /**
