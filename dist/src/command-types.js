@@ -1,9 +1,5 @@
 var Structures = require('./helpers/structures');
 var KvP = Structures.KvP;
-/**
- * CommandTypes.
- * Contains key value pairs for commands and their discriptions.
- */
 var CommandTypes = (function () {
     function CommandTypes() {
     }

@@ -4,33 +4,30 @@ import yolog = require('node-yolog');
 import Data = require('./config-data');
 import Notifier = require('./notifier');
 import Util = require('util');
-import Interval = require('./interval');
 import Continual = require('./continual');
 import ITask = require('./interfaces/task');
 import IOccurrence = require('./interfaces/occurrence');
 import OccurrenceAt = require('./occurrences/at');
 import OccurrenceIn = require('./occurrences/in');
 
-
-
 /**
  * The Task class implements the ITask and passes the calls to the script.
  */
 class ContinualTask implements ITask {
-  
+
   private subTasks: Array<ContinualTask>;
   private notifiers: Array<Notifier>;
-  private occurrence: IOccurrence;  
+  private occurrence: IOccurrence;
   private script: ITask;
   private parent: ContinualTask = null;
-  
+
   /**
    * ContinualTask constructor.
    * Creates and initializes a continual task.
    * @param {JobData} data Data to set up the task with.
    * @param {Continual} continual Continual main object.
    */
-  constructor(data: Data.TaskData, continual: Continual) {
+  constructor(data: Data.TaskData, continual: Continual) {    
     // Set up path to the actual script file
     var path = Util.format('%s/%s/%s', process.cwd(), '.continual', data.path);
     // Load it.
@@ -43,7 +40,7 @@ class ContinualTask implements ITask {
       var subtask: ContinualTask = new ContinualTask(data.subTasks[i], continual);
       subtask.parent = this;
       this.subTasks.push(subtask);
-    }    
+    }
     // And match all notifiers that the task have defined.
     for (var i = 0, count = data.notifiers.length; i < count; i++) {
       // Fetch notifier from the continual object.
@@ -63,7 +60,7 @@ class ContinualTask implements ITask {
       this.occurrence = new OccurrenceIn(data.interval);
     }
   }
-  
+
   /**
    * Run the job.
    * @param {function} Callback on job done: function(void) => void;
@@ -98,7 +95,7 @@ class ContinualTask implements ITask {
       });
     });
   }
-  
+
   /**
    * Start the job loop.
    * @param {function} Callback to fire when done (or undefined): function(void) => void;
@@ -112,9 +109,9 @@ class ContinualTask implements ITask {
       (next / 1000)
     );
     var self = this;
-    
+
     setTimeout(function() {
-      self.runJob(function() {
+      self.runJob(function () {
         if (callback) {
           callback();
         } else {
@@ -126,7 +123,7 @@ class ContinualTask implements ITask {
       });
     }, next);
   }
-  
+
    /**
    * Get name of the job.
    * @returns {string} Name.
@@ -150,7 +147,7 @@ class ContinualTask implements ITask {
   public getDescription(): string {
     return this.script.getDescription();
   }
-  
+
   /**
    * Get the Tasks sub-task count (including sub-tasks tasks).
    * @returns {number} Total count of tasks under the given task.

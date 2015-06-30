@@ -39,14 +39,18 @@ export class IntervalData implements ISerializable<IntervalData> {
    * @returns {IntervalData} this.
    */
   deserialize(data: any) {
-    var strType: string = data.type;
-    this.type = EIntervalType[strType.toLowerCase()];
-    if (this.type === EIntervalType.In) {
-      this.in = data.in;
-      this.unit = data.unit;
-    } else if (this.type === EIntervalType.At) {
+
+    if ('at' in data) {
+      this.type = EIntervalType.At;
       this.at = data.at;
+    } else if ('in' in data) {
+      this.type = EIntervalType.In;
+      this.in = data.in.value;
+      this.unit = data.in.unit;
+    } else {
+      throw new Error('Occurrence was neither of the type At or In.');
     }
+
     this.once = data.once;
     return this;
   }
