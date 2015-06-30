@@ -81,11 +81,11 @@ When a task is added, the config should look something like:
 The `in` type has two properties: `unit` and `value`.  
 Available units are the following:  
   
-* 'd' : Days - (24h)
-* 'h' : Hours
-* 'm' : Minutes
-* 's' : Seconds
-* 'ms' : Milliseconds
+* `d` : Days - (24h)
+* `h` : Hours
+* `m` : Minutes
+* `s` : Seconds
+* `ms` : Milliseconds
 
 And the `value` specifies how many of a given unit.  
 Example:
@@ -206,7 +206,7 @@ write it yourself and create a pull request!
 ```
 The MIT License (MIT)
 
-Copyright (c) 2015 Johannes Tegn�r
+Copyright (c) 2015 Johannes Tegnér
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
