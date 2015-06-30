@@ -10,7 +10,7 @@ npm install -g continual
   
   
 ## Usage
-Continual needs to be intiailized in the directory where its job will be run from.  
+Continual needs to be intiailized in the directory where its supposed to run.  
 You could of course run jobs from anywhere, and let them do whatever they want, its not jailed in the folder where its inited.  
 Initialization is easy, just point your terminal to the directory where you want it to run and type:
 
