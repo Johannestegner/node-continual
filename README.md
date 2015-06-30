@@ -1,6 +1,5 @@
 # Continual
-###  Run tasks on interval.
-  
+###  The simple task runner.
   
 ## Installation  
 Continual is supposed to be installed globally.  
