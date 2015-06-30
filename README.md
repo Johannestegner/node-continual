@@ -56,7 +56,7 @@ The interval is a object which specifies how often or at which occurrences the t
 There is two type of intervals/occurrences; `at` and `in`. The `at` occurrence defines a timestamp on which the task should be ran, and the `in` simply means "in how long".  
 See [in](#in), [at](#at) and [once](#once) for description on how the different interval types works.  
   
-The notifiers is an array with numbers, the numbers references a notifier ID (which is further explained in the [notifiers](#notifiers) part of the readme.  
+The notifiers is an array with numbers, the numbers references a notifier ID (which is further explained in the [notifiers](#installation-of-notifiers) part of the readme.  
   
 When a task is added, the config should look something like:  
 
