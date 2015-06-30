@@ -11,7 +11,6 @@ class OccurrenceAt implements IOccurrence {
   constructor(data: Data.IntervalData) {
     this.at = data.at;
     this.once = data.once;
-    
     this.done = false;
   }
 
@@ -36,7 +35,10 @@ class OccurrenceAt implements IOccurrence {
     // If the time has passed, we need to increase the object with either a full day (if its a h:m:s value) or depending on which
     // value that uses the *, add a hour or minute.
     if (next.getTime() < Date.now()) {
-      if (split[1] === '*') {
+      if (split[2] === '*') {
+        // Add a second.
+        next.setTime(next.getTime() + (1 * 1000));
+      } else if (split[1] === '*') {
         // Add a minute.
         next.setTime(next.getTime() + (1 * 1000 * 60))
       } else if (split[0] === '*') {
@@ -75,7 +77,7 @@ class OccurrenceAt implements IOccurrence {
     });
     var value: number = values[0];
 
-    return value - _now.getTime();
+    return value - (new Date()).getTime();
   }
 
   /**

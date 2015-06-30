@@ -15,7 +15,7 @@ export class IntervalData implements ISerializable<IntervalData> {
   unit: string;
   in: number;
   at: Array<string>;
-  once: boolean;
+  once: boolean = false;
   type: EIntervalType;
   
   /**
@@ -43,15 +43,14 @@ export class IntervalData implements ISerializable<IntervalData> {
     if ('at' in data) {
       this.type = EIntervalType.At;
       this.at = data.at;
-    } else if ('in' in data) {
-      this.type = EIntervalType.In;
-      this.in = data.in.value;
-      this.unit = data.in.unit;
     } else {
-      throw new Error('Occurrence was neither of the type At or In.');
+      this.type = EIntervalType.In;
+      this.in = data.value;
+      this.unit = data.unit;
     }
-
-    this.once = data.once;
+    if ('once' in data) {
+      this.once = data.once;
+    }
     return this;
   }
 }

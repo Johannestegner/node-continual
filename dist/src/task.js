@@ -54,7 +54,7 @@ var ContinualTask = (function () {
                     });
                 }, function () {
                     if (!self.parent) {
-                        yolog.info('The task %s and potential subtasks are done running.', self.getName());
+                        yolog.info('The task %s is done running.', self.getName());
                         yolog.debug('Done calling sub-tasks. Resetting timer.');
                     }
                     done();
@@ -72,7 +72,7 @@ var ContinualTask = (function () {
                     callback();
                 }
                 else {
-                    if (!self.occurrence.isOnce) {
+                    if (!self.occurrence.isOnce()) {
                         self.run(undefined);
                     }
                 }

@@ -6,21 +6,21 @@ var fs = require('fs');
 var EIntervalType = exports.EIntervalType;
 var IntervalData = (function () {
     function IntervalData() {
+        this.once = false;
     }
     IntervalData.prototype.deserialize = function (data) {
         if ('at' in data) {
             this.type = EIntervalType.At;
             this.at = data.at;
         }
-        else if ('in' in data) {
-            this.type = EIntervalType.In;
-            this.in = data.in.value;
-            this.unit = data.in.unit;
-        }
         else {
-            throw new Error('Occurrence was neither of the type At or In.');
+            this.type = EIntervalType.In;
+            this.in = data.value;
+            this.unit = data.unit;
         }
-        this.once = data.once;
+        if ('once' in data) {
+            this.once = data.once;
+        }
         return this;
     };
     return IntervalData;

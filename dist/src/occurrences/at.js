@@ -13,7 +13,10 @@ var OccurrenceAt = (function () {
         var s = split[2] === '*' ? curDate.getSeconds() : parseInt(split[2]);
         var next = new Date(curDate.getFullYear(), curDate.getMonth(), curDate.getDate(), h, m, s, 0);
         if (next.getTime() < Date.now()) {
-            if (split[1] === '*') {
+            if (split[2] === '*') {
+                next.setTime(next.getTime() + (1 * 1000));
+            }
+            else if (split[1] === '*') {
                 next.setTime(next.getTime() + (1 * 1000 * 60));
             }
             else if (split[0] === '*') {
@@ -42,7 +45,7 @@ var OccurrenceAt = (function () {
             return a - b;
         });
         var value = values[0];
-        return value - _now.getTime();
+        return value - (new Date()).getTime();
     };
     OccurrenceAt.prototype.isOnce = function () {
         return this.once;

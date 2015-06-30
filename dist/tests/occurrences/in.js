@@ -17,10 +17,8 @@ describe('Test class OccurrenceIn', function () {
         var occurrence = null;
         beforeEach(function () {
             occurrence = new OccurrenceIn((new Data.IntervalData()).deserialize({
-                'in': {
-                    'value': 1,
-                    'unit': 's'
-                },
+                'value': 1,
+                'unit': 's',
                 'once': true
             }));
         });
@@ -30,10 +28,8 @@ describe('Test class OccurrenceIn', function () {
         });
         it('isOnce() Should return false.', function (done) {
             var o = new OccurrenceIn((new Data.IntervalData()).deserialize({
-                'in': {
-                    'value': 1,
-                    'unit': 's'
-                },
+                'value': 1,
+                'unit': 's',
                 'once': false
             }));
             Assert.isFalse(o.isOnce());
@@ -44,10 +40,8 @@ describe('Test class OccurrenceIn', function () {
         var occurrence = null;
         beforeEach(function () {
             occurrence = new OccurrenceIn((new Data.IntervalData()).deserialize({
-                'in': {
-                    'value': 1,
-                    'unit': 's'
-                },
+                'value': 1,
+                'unit': 's',
                 'once': true
             }));
         });
