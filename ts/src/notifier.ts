@@ -3,11 +3,6 @@ import Data = require('./config-data');
 import Util = require('util');
 import INotifier = require('./interfaces/notifier');
 
-// Currently the notifier object is mainly a script loader whith a id.
-// It could just as well be a dictionary.
-// But in the future it might be used for other stuff too, so I decided to
-// have it as its own class.
-
 /**
  * The Notifier object implements the INotifier interface and passes the calls to the script.
  */

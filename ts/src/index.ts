@@ -1,6 +1,7 @@
 /// <reference path="../typings/node/node.d.ts"/>
 /// <reference path="../typings/node-yolog.d.ts"/>
 /// <reference path="helpers/arrayextend.ts"/>
+
 require('./helpers/arrayextend');
 import Structures = require('./helpers/structures');
 import fs = require('fs');
@@ -9,8 +10,8 @@ import Continual = require('./continual');
 import CommandTypes = require('./command-types');
 
 // Continual default directory and config file.
-var _dir            = '.continual';
-var _configFile     = _dir + '/config.json';
+var _dir = '.continual';
+var _configFile = _dir + '/config.json';
 
 /**
  * Fetch an argument from the argv list.
@@ -30,6 +31,7 @@ if (!hasArg(CommandTypes.DEBUG)) {
 yolog.debug('Debug mode is on.');
 
 if (hasArg(CommandTypes.INIT)) {
+  
   var _jobsFolder     = _dir + '/jobs';
   var _notifierFolder = _dir + '/notifiers';
   yolog.info('Initializing continual in current directory.');
@@ -60,7 +62,7 @@ if (hasArg(CommandTypes.INIT)) {
   });
   
 } else if (hasArg(CommandTypes.HELP)) {  
-  // Show the commands using standard output, not the yolog instance.
+  // Show the commands using standard output, not via yolog.
   console.log('\nAvailable continual commands & options:\n');
   console.log('-%s\t%s', CommandTypes.INIT.key, CommandTypes.INIT.value);
   console.log('-%s\t%s', CommandTypes.HELP.key, CommandTypes.HELP.value);
