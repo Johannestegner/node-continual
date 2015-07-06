@@ -1,6 +1,6 @@
 {
   "name": "continual",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Continual task scheduler.",
   "scripts": {
     "test": "mocha --recursive dist/tests"
