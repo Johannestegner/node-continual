@@ -4,7 +4,7 @@
 ## Installation  
 Continual is supposed to be installed globally.  
 ```
-npm install -g continual
+npm install -g https://github.com/Johannestegner/node-continual/tarball/1.0.0
 ```
   
   
