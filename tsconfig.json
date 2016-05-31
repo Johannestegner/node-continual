@@ -6,11 +6,11 @@
         "preserveConstEnums": true,
 
         "sourceMap": false,
-        "outDir": "../dist/",
+        "outDir": "dist/",
         "declaration": false
-    },    
+    },
     "filesGlob": [
-        "src/index.ts",
-        "tests/*"
+        "ts/src/index.ts",
+        "ts/tests/*"
     ]
 }
