@@ -85,3 +85,6 @@ obj/
 .settings/
 Continual.sln
 UpgradeLog.htm
+.vscode/
+dist/*
+!dist/.gitkeep

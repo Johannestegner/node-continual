@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Johannestegner/node-continual.svg?branch=master)](https://travis-ci.org/Johannestegner/node-continual)
+
 # Continual
 ###  The simple task runner.
   
