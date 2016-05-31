@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Continual task scheduler.",
   "scripts": {
-    "test": "cd ts/ & tsc & cd .. & mocha --recursive dist/tests"
+    "test": "mocha --recursive dist/tests"
   },
   "repository": {
     "type": "git",
