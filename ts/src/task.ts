@@ -24,10 +24,10 @@ class ContinualTask implements ITask {
   /**
    * ContinualTask constructor.
    * Creates and initializes a continual task.
-   * @param {taskData} data Data to set up the task with.
+   * @param {Data.TaskData} data Data to set up the task with.
    * @param {Continual} continual Continual main object.
    */
-  constructor(data: Data.TaskData, continual: Continual) {    
+  constructor(data: Data.TaskData, continual: Continual) {
     // Set up path to the actual script file
     var path = Util.format('%s/%s/%s', process.cwd(), '.continual', data.path);
     // Load it.
@@ -63,7 +63,7 @@ class ContinualTask implements ITask {
 
   /**
    * Run the task.
-   * @param {function} Callback on task done: function(void) => void;
+   * @param {function} done Callback on task done: function(void) => void;
    */
   public runTask(done: () => void): void {
     // Run the main task script.
@@ -98,7 +98,7 @@ class ContinualTask implements ITask {
 
   /**
    * Start the task loop.
-   * @param {function} Callback to fire when done (or undefined): function(void) => void;
+   * @param {function} callback Callback to fire when done (or undefined): function(void) => void;
    */
   public run(callback: () => void) {
     var next = this.occurrence.getNext();
